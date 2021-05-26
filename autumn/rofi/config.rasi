@@ -1,0 +1,184 @@
+/* RASI Theme */
+
+    
+
+configuration {
+	font:							"Hack Nerd Font 14";
+    show-icons:                     true;
+	icon-theme: 					"Papirus";
+    display-drun: 					"";
+    drun-display-format:            "{name}";
+    disable-history:                false;
+    fullscreen:                     false;
+	hide-scrollbar: 				true;
+	sidebar-mode: 					false;
+	modi:							[window, run, drun, ssh];
+	matching:						"fuzzy";
+	seperator-style:				"solid";
+	separator-color:				@red;
+}
+
+* {
+	background:					#2D383A;
+	foreground:					@background;
+	orange:						#F0A11A;
+	yellow:						#F2E418;
+	red:						#DE4421;
+	green:						#97B814;
+	
+}
+
+window {
+	border-color:				@red;
+    border:     				3;
+    border-radius:				15;
+    padding:   					1;
+    width:						25%;
+    height:						95%;
+    location:					west;
+    background-color:			@background;
+    x-offset:					2%;
+    y-offset:					1.6%;
+    radius:						15px;
+}
+
+prompt {
+	enabled:					true;
+	padding:					0.3% 1% 0% 0%;
+	background-color:			@background;
+	text-color:					@red;
+}
+
+entry {
+	background-color:			@background;
+	text-color:					@red;
+	placeholder-color:			@red;
+	expand:						true;
+	placeholder:				"Search";
+	spacing:					0;
+	padding:					0.1% 0% 0% 0%;
+	blink:						true;
+	radius:						10px;
+}
+
+case-indicator {
+	spacing:					0;
+	text-color:					@red;
+	background:					@background;
+}
+
+inputbar {
+	children:					[prompt, entry];
+	background-color:			@background;
+	text-color:					@red;
+	expand:						false;
+	border:						0% 0% 0% 0%;
+	border-radius:				15;
+	border-color:				@yellow;
+	margin:						0% 0% 0% 0%;
+	padding:					3%;
+}
+
+listview {
+	background-color:			@background;
+	padding:					10px;
+	columns:					2;
+	lines:						10;
+	spacing:					0%;
+	cycle:						false;
+	dynamic:					true;
+	layout:						vertical;
+}
+
+mainbox {
+	background-color:			@background;
+	border:						0% 0% 0% 0%;
+	border-color:				@yellow;
+	children:					[inputbar, listview];
+	spacing:					0%;
+	padding:					0%;
+}
+
+message {
+	border:						0% 0% 0% 0%;
+	border-color:				@yellow;
+	padding:					1px;
+}
+
+textbox {
+	text-color:					@orange;
+}
+
+element {
+	background-color:			@background;
+	text-color:					@orange;
+	orientation:				horizontal;
+	border-radius:				0%;
+	padding:					1% 0.5% 1% 0.5%;
+	radius:						10;
+}
+
+element-icon {
+	size:						24px;
+	border:						0px;
+}
+
+element-text {
+	expand:						true;
+	horizontal-align:			0;
+	vertical-align:				0.5;
+	margin:						0% 0.25% 0% 0.25%;
+}
+
+element-selected {
+	background-color:			@orange;
+	text-color:					@background;
+}
+
+element normal.normal {
+	background-color:			@background;
+	text-color:					@orange;
+}
+
+element normal.urgant {
+	background-color:			@background;
+	text-color:					@yellow;
+}
+
+element normal.active {
+	background-color:			@background;
+	text-color:					@green;
+}
+
+element selected.normal {
+	background-color:			@orange;
+	text-color:					@foreground;
+}
+
+element selected.urgent {
+	backgroud-color:			@red;
+	text-color:					@foreground;
+}
+
+textbox-prompt-colon {
+	expand:						false;
+	str:						":";
+	margin:						0px 4px 0px 0px;
+	text-color:					@green;
+	background-color:			@background;
+}
+
+button {
+	background-color:			@background;
+	foreground-color:			@orange;
+}
+
+button.selected {
+	background-color:			@foreground;
+	foreground-color:			@yellow;
+}
+
+mode-switcher {
+	border:						0% 0% 0% 0%;
+	border-color:				@green;
+}

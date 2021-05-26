@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+
+hc() {
+	herbstclient "$@"
+}
+
+hc emit_hook reload
+
+# Autostart applications
+
+polybar autumn &
+feh --bg-scale ~/Wallpapers/autumn &
+dunst &
+discord &
+picom &
+nm-applet &
+
+# Keybindings
+hc keyunbind --all
+
+Mod=Mod4
+myTerm=kitty
+myEditor="kakoune"
+
+hc keybind $Mod-Return spawn $myTerm
+hc keybind $Mod-space spawn rofi -show drun
+hc keybind $Mod-Shift-p spawn pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo +5%
+hc keybind $Mod-Shift-o spawn pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo -5%
+
+hc keybind $Mod-shift-greater set frame_border_width 3
+hc keybind $Mod-shift-less	  set frame_border_width 3
+
+hc keybind $Mod-Shift-q		quit
+hc keybind $Mod-Shift-c		close
+hc keybind $Mod-Shfit-r 	reload
+
+# Movement and focusing
+
+hc keybind $Mod-Left		focus left
+hc keybind $Mod-Right		focus right
+hc keybind $Mod-Up			focus up
+hc keybind $Mod-Down		focus down
+hc keybind $Mod-a 			focus left
+hc keybind $Mod-s			focus down
+hc keybind $Mod-w 			focus up
+hc keybind $Mod-d 			focus right
+
+hc keybind $Mod-Shift-Left		shift left
+hc keybind $Mod-Shift-Right		shift right
+hc keybind $Mod-Shift-Up		shift up
+hc keybind $Mod-Shift-Down		shift down
+hc keybind $Mod-Shift-a 		shift left
+hc keybind $Mod-Shift-s			shift down
+hc keybind $Mod-Shift-w 		shift up
+hc keybind $Mod-Shift-d 		shift right
+
+# Splitting
+hc keybind $Mod-Alt-c 		cycle_frame 1
+hc keybind $Mod-Alt-v		split bottom
+hc keybind $Mod-Alt-h 		split right
+hc keybind $Mod-Alt-space	split explode
+
+# Mouse
+hc mouseunbind --all
+hc mousebind $Mod-Button1 move
+hc mousebind $Mod-Button2 zoom
+hc mousebind $Mod-Button3 resize
+
+# Resizing
+resizestep=0.05
+hc keybind $Mod-Alt-a 		resize left +$resizestep
+hc keybind $Mod-Alt-s 		resize down +0.05
+hc keybind $Mod-Alt-d 		resize right +$resizestep
+hc keybind $Mod-Alt-w 		resize up +$resizestep
+hc keybind $Mod-Alt-Left	resize left +$resizestep
+hc keybind $Mod-Alt-Down	resize down +$resizestep
+hc keybind $Mod-Alt-Right 	resize right +$resizestep
+hc keybind $Mod-Alt-Up		resize up +$resizestep
+
+# Tags
+tag_names=(Terminal Web Code Reference Music Chat Video)
+tag_keys=( {1..9} 0 )
+
+hc rename default "${tag_names[0]}" || true
+for i in ${!tag_names[@]} ; do
+    hc add "${tag_names[$i]}"
+    key="${tag_keys[$i]}"
+    if ! [ -z "$key" ] ; then
+        hc keybind "$Mod-$key" use_index "$i"
+        hc keybind "$Mod-Shift-$key" move_index "$i"
+    fi
+done
+
+# Layouting
+hc keybind $Mod-r 			remove
+hc keybind $Mod-f 			fullscreen
+hc keybind $Mod-g			floating toggle
+hc keybind $Mod-p			pseudotile toggle
+
+# Colours
+green="#97B814"
+red="#DE4421"
+orange="#F0A11A"
+grey="#2D383A"
+yellow="#F2E418"
+
+# Theme
+hc attr theme.tiling.reset 			1
+hc attr theme.floating.reset 		1
+hc set frame_border_active_color	${green}
+hc set frame_border_normal_color	${red}
+hc set frame_bg_active_color		${grey}
+hc set frame_border_width 			0
+hc set always_show_frame 			0
+hc set frame_bg_transparent 		1
+hc set frame_transparent_width 		0
+hc set frame_gap 					10
+hc set default_frame_layout			grid
+hc set window_gap					5
+hc set_layout						grid
+
+hc attr theme.title_height 			0
+hc attr theme.title_font			Hack Nerd Font:style=Regular:size=12
+hc attr theme.padding_left 			4
+hc attr theme.padding_right			4
+hc attr theme.padding_top			4
+hc attr theme.padding_bottom		4
+hc attr theme.color					${orange}
+hc attr theme.active.color			${yellow}
+hc attr theme.normal.color 			${orange}
+hc attr theme.urgent.color			${orange}
+hc attr theme.active.title_color	${green}
+hc attr theme.title_color 			${grey}
+hc attr theme.inner_width 			0
+hc attr theme.inner_width			0
+hc attr theme.inner_color			${orange}
+hc attr theme.border_width			0
+hc attr theme.floating.border_width	0
+hc attr theme.floating.outer_width	0
+hc attr theme.floating.outer_color	${orange}
+hc attr theme.active.inner_color 	${orange}
+hc attr theme.urgent.inner_color 	${orange}
+hc attr theme.normal.inner_color 	${orange}
+# copy inner color to outer_color
+for state in active urgent normal ; do
+    hc substitute C theme.${state}.inner_color \
+        attr theme.${state}.outer_color C
+done
+hc attr theme.active.outer_width	0
+hc attr theme.background_color		${orange}
+
+# Rules
+hc rule								--title=Discord --tag=Chat --focus=off

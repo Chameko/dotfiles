@@ -1,0 +1,361 @@
+;==========================================================
+;
+;
+;   ██████╗  ██████╗ ██╗  ██╗   ██╗██████╗  █████╗ ██████╗
+;   ██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗
+;   ██████╔╝██║   ██║██║   ╚████╔╝ ██████╔╝███████║██████╔╝
+;   ██╔═══╝ ██║   ██║██║    ╚██╔╝  ██╔══██╗██╔══██║██╔══██╗
+;   ██║     ╚██████╔╝███████╗██║   ██████╔╝██║  ██║██║  ██║
+;   ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+;
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/polybar/polybar
+;
+;   The README contains a lot of information
+;
+;==========================================================
+
+
+[colors]
+
+transparent =		#002D383A
+foreground =		#2D383A
+background = 		#2D383A
+alt-foreground = 	#C3C3C3
+red =				#DE4421
+yellow = 			#F2E418
+orange =			#F0A11A
+green =				#97B814
+
+;***********************************
+
+[bar/autumn]
+
+width = 96%
+height = 28
+bottom = false
+offset-y = 4
+offset-x = 2%
+fixed-center = false
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+radius = 10
+font-0 = Hack Nerd Font:style=Bold:size=10;2
+font-1 = Hack Nerd Font:style=Bold:size=19;4
+font-2 = Hack Nerd Font:style=Bold:size=25;4
+
+enable-ipc = true
+modules-left = appl L1 wksp L2 spotify spotify-prev spotify-play-pause spotify-next L3
+modules-center = title
+modules-right = R1 network R2 pulseaudio R3 battery R4 date
+
+
+tray-position = none
+tray-maxsize = 16
+tray-background = ${colors.red}
+tray-padding = 0.5
+
+;***********************************
+
+[module/wksp]
+
+type = internal/xworkspaces
+format-background = ${colors.orange}
+format-foreground = ${colors.foreground}
+format-padding = 1
+padding = 1
+
+pin-workspaces = true
+enable-click = true
+
+icon-default = 祿
+
+format = <label-state>
+
+label-active = 綠
+label-active-foreground = ${colors.foreground}
+label-active-background = ${colors.orange}
+label-active-padding = 1
+
+label-occupied = %icon%
+label-occupied-background = ${colors.orange}
+label-occupied-foreground = ${colors.foreground}
+label-occupied-padding = 1
+
+label-urgent = %icon%
+label-urgent-foreground = ${colors.yellow}
+label-urgent-background = ${colors.foreground}
+label-urgent-padding = 1
+
+label-empty = %icon%
+label-empty-foreground = ${colors.foreground}
+label-empty-background = ${colors.orange}
+label-empty-padding = 1
+
+;***********************************
+
+[module/title]
+
+type = internal/xwindow
+
+format-background = ${colors.background}
+format-foreground = ${colors.alt-foreground}
+
+label = %title%
+label-maxlen = 30
+
+label-empty = ...
+
+;***********************************
+
+[module/pulseaudio]
+
+type = internal/pulseaudio
+sink = alsa_output.pci-0000_00_1b.0.analog-stereo
+interval = 2
+format-padding = 1
+format-background = ${colors.yellow}
+
+
+format-volume = <ramp-volume> <label-volume>
+format-volume-background = ${colors.yellow}
+format-muted = <label-muted>
+format-volume-padding = 1
+
+label-volume = %percentage%%
+label-volume-padding = 0
+label-muted-background = ${colors.yellow}
+label-muted = 婢 muted
+label-muted-padding = 1
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+click-left = pavucontrol
+
+;***********************************
+
+[module/network]
+
+type= internal/network
+interface= wlp4s0
+format-background = ${colors.green}
+format-padding = 1
+
+format-connected = %{A1:nm-connection-editor:}<label-connected>%{A}
+format-disconnected = %{A1:nm-connection-editor:}<label-disconnected>%{A}
+format-connected-background = ${colors.green}
+format-disconnected-background = ${colors.green}
+format-connected-padding = 1
+format-disconnected-padding = 1
+
+label-connected =  %signal%%
+label-disconnected = :(
+
+;***********************************
+
+[module/battery]
+
+type = internal/battery
+format-background = ${colors.orange}
+format-foreground = ${colors.foreground}
+format-padding = 1
+
+full-at = 99
+
+battery = BAT0
+adapter = AC
+
+format-charging = <label-charging>
+format-discharging = <ramp-capacity> <label-discharging>
+format-full = <ramp-capacity> <label-full>
+format-charging-background = ${colors.orange}
+format-charging-foreground = ${colors.foreground}
+format-full-background = ${colors.orange}
+format-full-foreground = ${colors.foreground}
+format-discharging-background = ${colors.orange}
+format-discharging-foreground = ${colors.foreground}
+format-charging-padding = 1
+format-discharging-padding = 1
+format-full-padding = 1
+
+label-charging = %percentage%%
+label-discharging = %percentage%%
+label-full = %percentage%%
+
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-5 = 
+
+;***********************************
+
+[module/date]
+type = internal/date
+interval = 5
+foramt-padding = 1
+format-background = ${colors.red}
+format-padding = 1
+
+date = "%d-%m-%Y"
+
+time = %H:%M
+
+label = " %time%"
+
+;***********************************
+
+[module/appl]
+
+type = custom/text
+content = 
+
+content-background = ${colors.red}
+content-foreground = ${colors.alt-foreground}
+content-padding = 2
+;***********************************
+
+[module/power]
+
+type = custom/text
+content = 拉
+
+content-background = ${colors.red}
+content-foreground = ${colors.alt-foreground}
+content-padding = 1
+;***********************************
+
+[module/spotify]
+type = custom/script
+tail = true
+format-prefix = "阮 "
+format = <label>
+label = %output:0:10:...%
+exec = ./scripts/get_spotify_status.sh
+format-background = ${colors.yellow}
+format-foreground = ${colors.foreground}
+format-padding = 1
+;***********************************
+
+[module/spotify-prev]
+type = custom/script
+exec = echo "玲"
+format = <label>
+click-left = playerctl previous spotify
+format-background = ${colors.yellow}
+format-foreground = ${colors.foreground}
+format-padding = 1
+;***********************************
+
+[module/spotify-play-pause]
+type = custom/ipc
+hook-0 = echo "契"
+hook-1 = echo ""
+initial = 1
+click-left = playerctl play-pause spotify
+format-background = ${colors.yellow}
+format-foreground = ${colors.foreground}
+format-padding = 1
+;***********************************
+
+[module/spotify-next]
+type = custom/script
+exec = echo "怜"
+format = <label>
+click-left = playerctl next spotify
+format-background = ${colors.yellow}
+format-foreground = ${colors.foreground}
+format-padding = 1
+
+;======================= Sperators ========================
+
+[module/L1]
+type = custom/text
+content = 
+
+content-background = ${colors.orange}
+content-foreground = ${colors.red}
+content-font = 2
+content-padding = 0
+content-offset = -10
+
+[module/L2]
+type = custom/text
+content = 
+
+content-offset = -11
+content-background = ${colors.yellow}
+content-foreground = ${colors.orange}
+content-font = 2
+content-padding = 0
+
+[module/L3]
+type = custom/text
+content = 
+
+content-background = ${colors.background}
+content-foreground = ${colors.yellow}
+content-font = 2
+content-padding = 0
+content-offset = -1
+
+[module/LS]
+type = custom/text
+content = ﮋ
+
+content-offset = -12
+content-background = ${colors.yellow}
+content-foreground = ${colors.orange}
+content-font = 3
+content-padding = 0
+
+
+[module/R1]
+type = custom/text
+content = 
+
+content-background = ${colors.background}
+content-foreground = ${colors.green}
+content-font = 2
+content-padding = 0
+
+[module/R2]
+type = custom/text
+content = 
+
+content-background = ${colors.green}
+content-foreground = ${colors.yellow}
+content-font = 2
+content-padding = 0
+
+[module/R3]
+type = custom/text
+content = 
+
+content-background = ${colors.yellow}
+content-foreground = ${colors.orange}
+content-font = 2
+content-padding = 0
+
+[module/R4]
+type = custom/text
+content = 
+
+content-background = ${colors.orange}
+content-foreground = ${colors.red}
+content-font = 2
+content-padding = 0
+
+[module/R5]
+type = custom/text
+content = 
+
+content-background = ${colors.red}
+content-foreground = ${colors.alt-foreground}
+content-font = 2
+content-padding = 0
