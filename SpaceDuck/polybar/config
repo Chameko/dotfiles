@@ -1,0 +1,232 @@
+;==========================================================
+;
+;
+;   ██████╗  ██████╗ ██╗  ██╗   ██╗██████╗  █████╗ ██████╗
+;   ██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗
+;   ██████╔╝██║   ██║██║   ╚████╔╝ ██████╔╝███████║██████╔╝
+;   ██╔═══╝ ██║   ██║██║    ╚██╔╝  ██╔══██╗██╔══██║██╔══██╗
+;   ██║     ╚██████╔╝███████╗██║   ██████╔╝██║  ██║██║  ██║
+;   ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+;
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/polybar/polybar
+;
+;   The README contains a lot of information
+;
+;==========================================================
+
+[colors]
+purple =    #7a5ccc
+purple2 =   #b3a1e6
+cyan =    #00a3cc
+green =    	#5ccc96
+orange =    #e39400
+
+background = #16172D
+background3 = #0f111b
+background2 = #16172d
+foreground = #ecf0c1
+
+[bar/top]
+width = 96%
+height = 28
+bottom = false
+offset-y = 4
+offset-x = 2%
+fixed-center = false
+
+background = ${colors.background3}
+foreground = ${colors.foreground}
+radius = 10
+font-0 = Hack Nerd Font:style=Bold:size=10;2
+font-1 = Hack Nerd Font:style=Bold:size=19;4
+font-2 = Hack Nerd Font:style=Bold:size=25;4
+
+enable-ipc = true
+modules-left = wksp R1
+modules-center = title
+modules-right = R2 network pulseaudio R3 battery date
+
+
+tray-position = right
+tray-maxsize = 16
+tray-background = ${colors.background}
+tray-padding = 0.5
+
+[module/wksp]
+
+type = internal/xworkspaces
+format-background = ${colors.purple}
+format-foreground = ${colors.background}
+format-padding = 1
+padding = 1
+
+pin-workspaces = true
+enable-click = true
+
+icon-default = 祿
+
+format = <label-state>
+
+label-active = 綠
+label-active-foreground = ${colors.background}
+label-active-background = ${colors.purple}
+label-active-padding = 1
+
+label-occupied = %icon%
+label-occupied-background = ${colors.purple}
+label-occupied-foreground = ${colors.background}
+label-occupied-padding = 1
+
+label-urgent = %icon%
+label-urgent-foreground = ${colors.background}
+label-urgent-background = ${colors.purple}
+label-urgent-padding = 1
+
+label-empty = %icon%
+label-empty-foreground = ${colors.background}
+label-empty-background = ${colors.purple}
+label-empty-padding = 1
+
+[module/title]
+
+type = internal/xwindow
+
+format-background = ${colors.background3}
+format-foreground = ${colors.purple2}
+
+label = %title%
+label-maxlen = 30
+
+label-empty = ...
+
+[module/pulseaudio]
+
+type = internal/pulseaudio
+sink = alsa_output.pci-0000_00_1b.0.analog-stereo
+interval = 2
+format-padding = 1
+format-background = ${colors.background2}
+
+
+format-volume = <ramp-volume> <label-volume>
+format-volume-foreground = ${colors.cyan}
+format-volume-background = ${colors.background2}
+format-muted = <label-muted>
+format-volume-padding = 1
+
+label-volume = %percentage%%
+label-volume-padding = 0
+label-volume-foreground = ${colors.cyan}
+label-volume-background = ${colors.background2}
+label-muted-foreground = ${colors.cyan}
+label-muted-background = ${colors.background2}
+label-muted = 婢 muted
+label-muted-padding = 1
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+click-left = pavucontrol
+
+[module/network]
+
+type= internal/network
+interface= wlp4s0
+format-background = ${colors.background2}
+format-foreground = ${colors.cyan}
+format-padding = 1
+
+format-connected = %{A1:nm-connection-editor:}<label-connected>%{A}
+format-disconnected = %{A1:nm-connection-editor:}<label-disconnected>%{A}
+format-connected-background = ${colors.background2}
+format-connected-foreground = ${colors.cyan}
+format-disconnected-background = ${colors.background2}
+format-disconnected-foreground = ${colors.cyan}
+format-connected-padding = 1
+format-disconnected-padding = 1
+
+label-connected =  %signal%%
+label-disconnected = :(
+
+[module/battery]
+
+type = internal/battery
+format-background = ${colors.background}
+format-foreground = ${colors.green}
+format-padding = 1
+
+full-at = 99
+
+battery = BAT0
+adapter = AC
+
+format-charging = <label-charging>
+format-discharging = <ramp-capacity> <label-discharging>
+format-full = <ramp-capacity> <label-full>
+format-charging-background = ${colors.background}
+format-charging-foreground = ${colors.green}
+format-full-background = ${colors.background}
+format-full-foreground = ${colors.green}
+format-discharging-background = ${colors.background}
+format-discharging-foreground = ${colors.green}
+format-charging-padding = 1
+format-discharging-padding = 1
+format-full-padding = 1
+
+label-charging = %percentage%%
+label-discharging = %percentage%%
+label-full = %percentage%%
+
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-5 = 
+
+
+[module/date]
+type = internal/date
+interval = 5
+foramt-padding = 1
+format-foreground = ${colors.orange}
+format-background = ${colors.background}
+format-padding = 1
+
+date = "%d-%m-%Y"
+
+time = %H:%M
+
+label = " %date%  %time%"
+
+[module/R1]
+type = custom/text
+content = 
+
+content-background = ${colors.purple}
+content-foreground = ${colors.background3}
+content-font = 2
+content-padding = 1
+content-offset = -8
+
+[module/R2]
+type = custom/text
+content = 
+
+content-background = ${colors.background3}
+content-foreground = ${colors.background2}
+content-font = 2
+content-padding = 1
+content-offset = -8
+
+[module/R3]
+type = custom/text
+content = 
+content-font = 2
+content-background = ${colors.background2}
+content-foreground = ${colors.background}
+content-padding = 1
+content-offset = -8
