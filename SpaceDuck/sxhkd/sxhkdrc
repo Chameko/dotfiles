@@ -1,0 +1,75 @@
+#
+# wm independent hotkeys
+#
+
+# terminal emulator
+super + Return
+    alacritty
+
+# application launcher
+super + space
+    rofi -show drun window calc
+
+# make sxhkd to reload its config files
+super + Escape
+    pkill -USR1 -x sxhkd
+
+#
+# bspwm hotkeys
+#
+
+# quit/restart bspwm
+super + shift + {q,r}
+    bspc {quit,wm -r}
+    
+# close and kill
+super + shift + {c,k}
+    bspc node -{c,k}
+    
+# set the window state
+super + {t, f}
+    bspc node -t {tiled, floating}
+
+#
+# focus / swap
+#
+
+# focus or swap nodes in a given direction
+super + {_,shift + }{w,a,s,d}
+    bspc node -{f,s} {north, west, south, east}
+
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
+
+#
+# preselect
+#
+
+# preselect direction
+super + alt + {w,a,s,d}
+    bspc node -p {north,west,south,east}
+
+# preselect ratio
+super + alt + {1-9}
+    bspc node -o 0.{1-9}
+
+# cancel preselection for the focused node
+super + alt + c
+    bspc node -p cancel
+
+#
+# Move/resize
+#
+
+# expand window by moving one of its sides outwards
+super + ctrl + {w,a,s,d}
+    bspc node -z {top 0 -20,left -20 0,bottom 0 20,right 20 0}
+
+# contract window by moving one its sides inwards
+super + ctrl + shift + {w,a,s,d}
+    bspc node -z {top 0 20,left 20 0,bottom 0 -20,right -20 0}
+
+# move floating window
+super + alt + shift + {w,a,s,d}
+    bspc node -v {0 20,-20 0,0 -20,20 0}
