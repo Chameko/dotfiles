@@ -6,13 +6,15 @@ configuration {
     icon-theme:                     "Papirus";
     display-drun:                   "";
     display-window:                 "";
+    display-calc:                   "";
     drun-display-format:            "{name}";
     disable-history:                false;
     fullscreen:                     false;
     hide-scrollbar:                 true;
     sidebar-mode:                   false;
-    modi:                           [window,drun];
+    modi:                           [window,drun,calc];
     matching:                       "fuzzy";
+    separatorcolor:                 @orange;
 }
 
 * {
@@ -28,7 +30,7 @@ configuration {
 
 window {
     seperator-style:            "solid";
-    separator-color:            @orange;
+    separatorcolor:             @orange;
     border-color:               @purple;
     border:                     3;
     padding:                    1;
@@ -145,6 +147,21 @@ element normal.active {
     text-color:                 @blue;
 }
 
+element alternate.normal {
+    background-color:           @background;
+    text-color:                 @green;
+}
+
+element alternate.urgant {
+    background-color:           @background;
+    text-color:                 @green;
+}
+
+element alternate.active {
+    background-color:           @background;
+    text-color:                 @blue;
+}
+
 element selected.normal {
     background-color:           @background;
     text-color:                 @orange;
@@ -171,6 +188,7 @@ textbox-prompt-colon {
 button {
     background-color:           @background;
     text-color:                 @purple;
+    horizontal-align:           0.5;
 }
 
 button selected {
@@ -183,4 +201,8 @@ mode-switcher {
     border-color:               @dpurple;
     spacing:                    0px;
     background-color:           @dpurple;
+}
+
+scrollbar {
+	handle-color:               @purple;
 }
