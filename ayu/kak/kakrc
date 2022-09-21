@@ -1,0 +1,118 @@
+#
+# BASIC CONFIGERATION
+# 
+
+# Set the colour scheme to ayu
+colorscheme ayu-mirage
+
+# Add highlighters
+add-highlighter global/ number-lines
+add-highlighter global/ show-whitespaces
+add-highlighter global/ wrap -marker "﬌ "
+#
+# KAKOUNE LSP ---------------------------------
+#
+
+# Start LSP
+eval %sh{kak-lsp --kakoune -s $kak_session}
+
+# Enable rust-analyser
+hook global WinSetOption filetype=(rust|python|go|javascript|c|cpp) %{
+    lsp-enable-window
+    lsp-inlay-hints-enable global
+    lsp-diagnostic-lines-enable global
+    lsp-inlay-diagnostics-enable global
+    lsp-inline-diagnostics-enable global
+}
+
+
+#
+# PLUGINS -------------------------------------
+#
+
+# Load plug.kak
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+plug "andreyorst/plug.kak" noload
+
+# Load other plugins
+plug "alexherbo2/auto-pairs.kak"
+
+plug "andreyorst/kaktree" defer %{
+    set-option kaktreeclient 'tree'
+} config %{
+    hook global WinSetOption filetype=kaktree %{
+        remove-highlighter buffer/numbers
+        remove-highlighter buffer/matching
+        remove-highlighter buffer/wrap
+        remove-highlighter buffer/show-whitespaces
+    }
+    kaktree-enable
+}
+plug "insipx/kak-crosshairs" config %{
+    cursorline
+}
+plug "Delapouite/kakoune-buffers/"
+
+plug "danr/kakoune-easymotion"
+
+plug "andreyorst/fzf.kak" defer %{
+    set-option global fzf_file_command 'fd -tf | fzf'
+}
+
+plug " h-youhei/kakoune-surround"
+
+plug "lePerdu/kakboard" %{
+    hook global WinCreate .* %{ kakboard-enable }
+}
+
+plug "andreyorst/powerline.kak" defer powerline %{
+    powerline-separator triangle
+    powerline-format global 'git filetype lsp mode_info line_column position session'
+} defer powerline_bufname %{
+    set-option global powerline_shorten_bufname 'short'
+} config %{
+    powerline-start
+}
+
+enable-auto-pairs
+set-option global lsp_auto_highlight_references true
+#
+# KEYBINDINGS --------------------------------- 
+#
+
+# LSP Keybinds --------------------------------
+declare-user-mode common-lsp
+map global common-lsp <e> ': lsp-diagnostics<ret>' -docstring "list project errors, hints, info and warnings"
+map global common-lsp <r> ': lsp-references<ret>' -docstring "list symbol references"
+map global common-lsp <n> ': lsp-find-error<ret>' -docstring "find next error"
+map global common-lsp <p> ': lsp-find-error --previous<ret>' -docstring "find previous error"
+map global common-lsp <R> ': lsp-rename-prompt<ret>' -docstring "rename symbol"
+map global common-lsp <a> ': lsp-auto-hover-enable<ret>' -docstring "enable auto hover info"
+map global common-lsp <d> ': lsp-auto-hover-disable<ret>' -docstring "disable auto hover info"
+map global common-lsp <}> ': lsp-next-symbol Class Enum Function Interface Module Namespace Object TypeParameter<ret>' -docstring "goto next symbol"
+map global common-lsp <{> ': lsp-previous-symbol Class Enum Function Interface Module Namespace Object TypeParameter<ret>' -docstring "goto preivious symbol"
+map global common-lsp <h> ': lsp-hover' -docstring "show hover info"
+
+# FZF keybindings ---- ------------------------
+map global normal <c-space> ': fzf-mode<ret>'
+map global user <space> ': fzf-mode<ret>' -docstring "fzf mode"
+
+# Surround Mode Keybindings ---------------------
+declare-user-mode surround
+map global surround s ':surround<ret>' -docstring 'surround'
+map global surround c ':change-surround<ret>' -docstring 'change'
+map global surround d ':delete-surround<ret>' -docstring 'delete'
+map global surround t ':select-surrounding-tag<ret>' -docstring 'select tag'
+map global normal <c-[> ':enter-user-mode surround<ret>'
+
+# User Mode keybindings -----------------------
+map global user <e> ': enter-user-mode easymotion<ret>' -docstring "easymotion mode"
+map global user <b> ': pick-buffers<ret>' -docstring "pick buffer"
+map global user <L> ': enter-user-mode lsp<ret>' -docstring "LSP operations"
+map global user <l> ': enter-user-mode common-lsp<ret>' -docstring "Common LSP operations"
+map global user <s> ': enter-user-mode surround<ret>' -docstring "Surround operations"
+map global normal <e> ': enter-user-mode easymotion<ret>' -docstring "easymotion mode"
+map global normal <semicolon> ': enter-user-mode common-lsp<ret>' -docstring "Common LSP operations"
+map global insert <c-l> '<esc> : lsp-hover<ret>i'
+
+

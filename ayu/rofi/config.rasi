@@ -1,0 +1,212 @@
+/* RASI Theme */
+
+configuration {
+    font:                           "Hack Nerd Font 14";
+    show-icons:                     true;
+    icon-theme:                     "Papirus";
+    display-drun:                   "";
+    display-window:                 "";
+    display-calc:                   "";
+    drun-display-format:            "{name}";
+    disable-history:                false;
+    fullscreen:                     false;
+    hide-scrollbar:                 true;
+    sidebar-mode:                   false;
+    modi:                           "window,drun,calc";
+    matching:                       "fuzzy";
+    separatorcolor:                 @selected;
+}
+
+* {
+    background:                 #0d1017;
+    foreground:                 #bfbdb6;
+    primary:                    #feb454;
+    background-alt:             #131721;
+    selected:                   #59c2ff;
+    unselected:                 #aad94c;
+    borderc:                    #16172D;
+    alt:                        @unselected;
+}
+
+window {
+    seperator-style:            "none";
+    separatorcolor:             @selected;
+    border-color:               @primary;
+    border:                     3;
+    padding:                    0;
+    width:                      60%;
+    height:                     60%;
+    location:                   center;
+    background-color:           @background;
+    x-offset:                   2%;
+    y-offset:                   1.6%;
+}
+
+prompt {
+    enabled:                    true;
+    padding:                    0% 1% 0% 0%;
+    background-color:           @primary;
+    text-color:                 @background;
+}
+
+entry {
+    background-color:           @primary;
+    text-color:                 @background;
+    placeholder-color:          @background;
+    expand:                     true;
+    placeholder:                "Search";
+    spacing:                    0;
+    padding:                    0% 0% 0% 0%;
+    blink:                      true;
+}
+
+case-indicator {
+    spacing:                    0;
+    text-color:                 @primary;
+    background:                 @background-alt;
+}
+
+inputbar {
+    children:                   [prompt, entry];
+    background-color:           @primary;
+    text-color:                 @background;
+    expand:                     false;
+    border:                     0px 0px 8px;
+    border-color:               @background;
+    margin:                     0px 0px 0px;
+    padding:                    3%;
+}
+
+listview {
+    background-color:           @background;
+    padding:                    10px;
+    columns:                    3;
+    lines:                      10;
+    spacing:                    0%;
+    cycle:                      false;
+    dynamic:                    true;
+    layout:                     vertical;
+}
+
+mainbox {
+    background-color:           @background;
+    border:                     0% 0% 0% 0%;
+    border-color:               @primary;
+    children:                   [inputbar, listview, mode-switcher];
+    spacing:                    0%;
+    padding:                    0%;
+}
+
+message {
+    border:                     0% 0% 0% 0%;
+    border-color:               @selected;
+    padding:                    1px;
+}
+
+textbox {
+    text-color:                 @selected;
+}
+
+element {
+    background-color:           @background;
+    text-color:                 @unselected;
+    orientation:                horizontal;
+    border-radius:              0%;
+    padding:                    1% 0.5% 1% 0.5%;
+}
+
+element-icon {
+    size:                       24px;
+    border:                     0px;
+}
+
+element-text {
+    expand:                     true;
+    horizontal-align:           0;
+    vertical-align:             0.5;
+    margin:                     0% 0.25% 0% 0.25%;
+}
+
+element-selected {
+    background-color:           @selected;
+    text-color:                 @background;
+    highlight:                  bold;
+}
+
+element normal.normal {
+    background-color:           @background;
+    text-color:                 @unselected;
+}
+
+element normal.urgant {
+    background-color:           @background;
+    text-color:                 @unselected;
+}
+
+element normal.active {
+    background-color:           @background;
+    text-color:                 @alt;
+}
+
+element alternate.normal {
+    background-color:           @background;
+    text-color:                 @unselected;
+}
+
+element alternate.urgant {
+    background-color:           @background;
+    text-color:                 @unselected;
+}
+
+element alternate.active {
+    background-color:           @background;
+    text-color:                 @alt;
+}
+
+element selected.normal {
+    background-color:           @background-alt;
+    text-color:                 @selected;
+    highlight:                  bold;
+}
+
+element selected.urgent {
+    background-color:           @background-alt;
+    text-color:                 @selected;
+    highlight:                  bold;
+}
+
+element selected.active {
+    background-color:           @background-alt;
+    text-color:                 @selected;
+    highlight:                  bold;
+}
+
+textbox-prompt-colon {
+    expand:                     false;
+    str:                        ":";
+    margin:                     0px 4px 0px 0px;
+    text-color:                 @primary;
+    background-color:           @background;
+}
+
+button {
+    background-color:           @background;
+    text-color:                 @primary;
+    horizontal-align:           0.5;
+}
+
+button selected {
+    background-color:           @background-alt;
+    text-color:                 @selected;
+}
+
+mode-switcher {
+    border:                     8px 0px 0px;
+    border-color:               @background-alt;
+    spacing:                    0px;
+    background-color:           @background-alt;
+}
+
+scrollbar {
+	handle-color:               @primary;
+}

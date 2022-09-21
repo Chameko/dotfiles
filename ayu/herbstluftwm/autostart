@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+
+hc() {
+    herbstclient "$@"
+}
+
+killall -q polybar &
+pipewire &
+pipewire-pulse &
+
+polybar top &
+feh --bg-scale ~/wallpapers/astronaut-29-2560×1440.jpg &
+dunst &
+picom &
+
+hc detect_monitors
+hc keyunbind --all
+
+Mod=Mod4
+myTerm=alacritty
+myEditor=kak
+
+
+# Spawning other programs
+hc keybind $Mod-Return spawn $myTerm
+hc keybind $Mod-e spawn $myTerm -e ~/.config/herbstluftwm/editor.sh
+hc keybind $Mod-Shift-Return rofi -show window
+hc keybind $Mod-space spawn rofi -show drun
+hc keybind $Mod-Shift-p spawn pamixer -i 5
+hc keybind $Mod-Shift-o spawn pamixer -d 5
+hc keybind $Mod-Shift-m spawn pamixer -t
+ 
+# Important actions
+hc keybind $Mod-q     quit
+hc keybind $Mod-Shift-c     close
+hc keybind $Mod-r           reload
+ 
+# Focus and movement with W,A,S,D
+hc keybind $Mod-Left        focus left
+hc keybind $Mod-Right       focus right
+hc keybind $Mod-Up          focus up
+hc keybind $Mod-Down        focus down
+hc keybind $Mod-a           focus left
+hc keybind $Mod-s           focus down
+hc keybind $Mod-w           focus up
+hc keybind $Mod-d           focus right
+ 
+hc keybind $Mod-Shift-Left      shift left
+hc keybind $Mod-Shift-Right     shift right
+hc keybind $Mod-Shift-Up        shift up
+hc keybind $Mod-Shift-Down      shift down
+hc keybind $Mod-Shift-a         shift left
+hc keybind $Mod-Shift-s         shift down
+hc keybind $Mod-Shift-w         shift up
+hc keybind $Mod-Shift-d         shift right
+ 
+# Splitting
+hc keybind $Mod-Alt-v       split bottom
+hc keybind $Mod-Alt-h       split right
+hc keybind $Mod-Alt-space   split auto
+hc keybind $Mod-j           split right
+hc keybind $Mod-k           split bottom
+hc keybind $Mod-l           split auto
+ 
+# Mouse
+hc mouseunbind --all
+hc mousebind $Mod-Button1 move
+hc mousebind $Mod-Button3 zoom
+hc mousebind $Mod-Button2 resize
+ 
+# Resizing
+resizestep=0.05
+hc keybind $Mod-Alt-a       resize left +$resizestep
+hc keybind $Mod-Alt-s       resize down +$resizestep
+hc keybind $Mod-Alt-d       resize right +$resizestep
+hc keybind $Mod-Alt-w       resize up +$resizestep
+hc keybind $Mod-Alt-Left    resize left +$resizestep
+hc keybind $Mod-Alt-Down    resize down +$resizestep
+hc keybind $Mod-Alt-Right   resize right +$resizestep
+hc keybind $Mod-Alt-Up      resize up +$resizestep
+ 
+hc keybind $Mod-Shift-r           remove
+hc keybind $Mod-Shift-l           cycle_layout 1
+hc keybind $Mod-f                 floating toggle
+
+# Add tags
+tag_names=(Terminal Web Code Reference Music Chat Video)
+tag_keys=( {1..9} 0 )
+
+hc rename default "${tag_names[0]}" || true
+for i in ${!tag_names[@]} ; do
+    hc add "${tag_names[$i]}"
+    key="${tag_keys[$i]}"
+    if ! [ -z "$key" ] ; then
+        hc keybind "$Mod-$key" use_index "$i"
+        hc keybind "$Mod-Shift-$key" move_index "$i"
+    fi
+done
+
+# Colours
+background="#0d1017"
+foreground="#bfbdb6"
+primary="#feb454"
+secondary="#59c2ff"
+
+# Settings
+hc set frame_gap               5
+hc set window_gap              0
+hc set always_show_frame       false
+hc set frame_border_normal_color ${primary}
+hc set auto_detect_monitors    true
+hc set frame_bg_transparent    true
+hc set frame_border_width      0
+hc set raise_on_click          true
+hc set frame_active_opacity    80
+hc set frame_normal_opacity    0
+hc set frame_transparent_width 4
+hc set frame_bg_active_color   ${secondary}
+hc set swap_monitors_to_get_tag false
+
+# Borders
+hc attr theme.title_height     0
+hc attr theme.border_width     4
+hc attr theme.inner_width      0
+
+# Configuring colours
+hc attr theme.active.color     ${primary}
+hc attr theme.normal.color     ${background}
+
+# Pad for polybar
+hc pad 0 42
+
+# Turn off borders on empty tags
+hc spawn ./smartframeborder.sh
