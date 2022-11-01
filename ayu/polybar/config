@@ -37,7 +37,7 @@ foreground = ${colors.foreground}
 radius = 10
 font-0 = FiraCode Nerd Font:style=Bold:size=10;2
 font-1 = mplus Nerd Font:style=Bold:size=10;4
-font-2 = FiraCode Nerd Font:style=Bold:size=19;4
+font-2 = Hack Nerd Font:style=Bold:size=20;5
 
 enable-ipc = true
 modules-left = wksp R1
@@ -201,22 +201,21 @@ label = " %date%  %time%"
 
 [module/R1]
 type = custom/text
-content = 
-
-content-background = ${colors.primary}
-content-foreground = ${colors.background}
+content = 
+content-background = ${colors.background}
+content-foreground = ${colors.primary}
 content-font = 3
 content-padding = 1
-content-offset = -8
+content-offset = -25
 
 [module/R2]
 type = custom/text
-content = 
-
-content-background = ${colors.background}
-content-foreground = ${colors.background-alt}
+content = 
+content-background = ${colors.background-alt}
+content-foreground = ${colors.background}
 content-font = 3
 content-padding = 1
+content-offset = -18
 
 [module/R3]
 type = custom/text

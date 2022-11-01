@@ -1,0 +1,95 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 28,
+    "modules-left": ["wlr/workspaces", "l1", "tray", "l2"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["r1", "network", "custom/pipewire", "r2", "cpu", "memory", "battery", "r3", "clock"],
+    
+    "wlr/workspaces" : {
+        "format": "{icon}",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "",
+            "6": "",
+            "7": "",
+            "default": "祿",
+            "active": "綠"
+        }
+    },
+    
+    "hyprland/window": {
+        "format": "{}"
+    },
+    
+    "network": {
+        "interface": "wlp4s0",
+        "format": "{說{signalStrength}%}",
+        "tooltip-format": "{essid} | ﰬ{bandwidthDownBits ﰵ{bandwidthUpBits}}",
+        "format-disconnected": "( •᷄ὤ•᷅)？"
+    },
+    
+    "custom/pipewire": {
+        "max-length": 6,
+        "exec": "$HOME/.config/waybar/scripts/pipewire.sh"
+    },
+    
+    "pulseaudio": {
+        "format": "{icon}{volume}%",
+        "format-muted": "婢",
+        "format-bluetooth": "{volume}%",
+        "format-icons": {
+            "default": "",
+            "headphone": "",
+            "headset": "",
+        }
+    },
+    
+    "cpu": {
+        "format": "{usage}%"
+    },
+    
+    "memory": {
+        "format": "{used}GiB"
+    },
+    
+    "battery": {
+        "bat": "BAT0",
+        "format": "{icon}{capacity}%",
+        "full-at": 98,
+        "format-icons": ["", "", "", "", "", ""]
+    },
+    
+    "clock": {
+        "format": "{calendar} {%H:%M}",
+        "format-calendar": "%d/%m/%Y"
+    },
+    
+    "tray": {
+        "icon-size": 21,
+        "spacing": 10
+    },
+    
+    "custom/l1": {
+        "format": ""
+    },
+    
+    "custom/l2": {
+        "format": ""
+    },
+    
+    "custom/r1": {
+        "format": ""
+    },
+    
+    "custom/r2": {
+        "format": ""
+    },
+    
+    "custom/r3": {
+        "format": ""
+    }
+}

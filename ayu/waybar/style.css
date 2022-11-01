@@ -1,0 +1,67 @@
+* {
+  border: none;
+  font-family: FiraCode Nerd Font;
+  padding-left: 2px;
+  padding-right: 2px;
+  font-size: 10px;
+}
+
+window#waybar {
+  background: #0d1017;
+}
+
+#workspaces {
+  background: #feb454;
+  foreground: #0d1017;
+}
+
+#tooltip {
+  border: 1px #bfbdb6;
+  background: #0d1017;
+}
+
+#l1 {
+  color: #feb454;
+  background: #0f131a;
+}
+
+#tray {
+  background: #0f131a;
+}
+
+#r1 {
+  background: #0f131a;
+  color: #0d1017;
+}
+
+#network, #custom-pipewire {
+  background: #0f131a;
+  color: #59c2ff;
+}
+
+#r2 {
+  background: #131721
+  color: #0f131a
+}
+
+#cpu, #memory, #battery {
+  background: #131721;
+}
+
+#cpu #memory {
+  color: #f26d78;
+}
+
+#battery {
+  color: #aad94c;
+}
+
+#r3 {
+  background: #0d1017;
+  color: #131721;
+}
+
+#clock {
+  background: #131721;
+  color: #feb454;
+}
