@@ -1,9 +1,9 @@
 * {
   border: none;
   font-family: FiraCode Nerd Font;
-  padding-left: 2px;
-  padding-right: 2px;
-  font-size: 10px;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 14px;
 }
 
 window#waybar {
@@ -12,7 +12,7 @@ window#waybar {
 
 #workspaces {
   background: #feb454;
-  foreground: #0d1017;
+  color: #0d1017;
 }
 
 #tooltip {
@@ -29,6 +29,14 @@ window#waybar {
   background: #0f131a;
 }
 
+#l1, #r1, #r2, #r3 {
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-size: 20px;
+}
+
 #r1 {
   background: #0f131a;
   color: #0d1017;
@@ -40,8 +48,8 @@ window#waybar {
 }
 
 #r2 {
-  background: #131721
-  color: #0f131a
+  background: #131721;
+  color: #0f131a;
 }
 
 #cpu, #memory, #battery {

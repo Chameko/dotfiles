@@ -1,11 +1,13 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 28,
-    "modules-left": ["wlr/workspaces", "l1", "tray", "l2"],
+    "height": 32,
+    "width": 1336, 
+    "modules-left": ["wlr/workspaces", "custom/l1", "tray", "custom/l2"],
     "modules-center": ["hyprland/window"],
-    "modules-right": ["r1", "network", "custom/pipewire", "r2", "cpu", "memory", "battery", "r3", "clock"],
-    
+    "modules-right": ["custom/r1", "network", "custom/pipewire", "custom/r2", "cpu", "memory", "battery", "custom/r3", "clock"],
+    "radius": 7,
+    "fixed-center": false,
     "wlr/workspaces" : {
         "format": "{icon}",
         "format-icons": {
@@ -28,7 +30,7 @@
     "network": {
         "interface": "wlp4s0",
         "format": "{說{signalStrength}%}",
-        "tooltip-format": "{essid} | ﰬ{bandwidthDownBits ﰵ{bandwidthUpBits}}",
+        "tooltip-format": "{essid} | ﰬ{bandwidthDownBits} ﰵ{bandwidthUpBits}",
         "format-disconnected": "( •᷄ὤ•᷅)？"
     },
     
