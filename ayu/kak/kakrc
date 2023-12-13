@@ -2,13 +2,20 @@
 # BASIC CONFIGERATION
 # 
 
-# Set the colour scheme to ayu
-colorscheme ayu-mirage
-
 # Add highlighters
-add-highlighter global/ number-lines
-add-highlighter global/ show-whitespaces
-add-highlighter global/ wrap -marker "﬌ "
+add-highlighter global/number-lines number-lines -relative -hlcursor -separator "  "
+add-highlighter global/ show-whitespaces -spc "·" -lf " "
+add-highlighter global/ wrap -marker "↩ "
+add-highlighter global/ show-matching
+
+# Settings
+set-option global tabstop 4
+set-option global indentwidth 4
+set-option global ui_options terminal_padding_char=  terminal_padding_fill=true terminal_assistant=cat
+set-option global scrolloff 8,3
+
+colorscheme ayu-dark
+
 #
 # KAKOUNE LSP ---------------------------------
 #
@@ -16,69 +23,74 @@ add-highlighter global/ wrap -marker "﬌ "
 # Start LSP
 eval %sh{kak-lsp --kakoune -s $kak_session}
 
-# Enable rust-analyser
-hook global WinSetOption filetype=(rust|python|go|javascript|c|cpp) %{
-    lsp-enable-window
-    lsp-inlay-hints-enable global
-    lsp-diagnostic-lines-enable global
-    lsp-inlay-diagnostics-enable global
-    lsp-inline-diagnostics-enable global
-}
-
-
 #
 # PLUGINS -------------------------------------
 #
 
-# Load plug.kak
+# Load plungin manager
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "andreyorst/plug.kak" noload
 
-# Load other plugins
+# Autopairs :)
 plug "alexherbo2/auto-pairs.kak"
 
-plug "andreyorst/kaktree" defer %{
-    set-option kaktreeclient 'tree'
-} config %{
-    hook global WinSetOption filetype=kaktree %{
-        remove-highlighter buffer/numbers
-        remove-highlighter buffer/matching
-        remove-highlighter buffer/wrap
-        remove-highlighter buffer/show-whitespaces
-    }
-    kaktree-enable
-}
-plug "insipx/kak-crosshairs" config %{
-    cursorline
-}
+# Smarttab
+plug "andreyorst/smarttab.kak"
+
+# Easier navigation of buffers
 plug "Delapouite/kakoune-buffers/"
 
-plug "danr/kakoune-easymotion"
+# Surround commands
+plug "h-youhei/kakoune-surround"
 
-plug "andreyorst/fzf.kak" defer %{
-    set-option global fzf_file_command 'fd -tf | fzf'
+# Lua support
+plug "gustavo-hms/luar" %{
+    # Peneira, a fuzzy finder for kakoune
+    plug "gustavo-hms/peneira" %{
+        require-module peneira
+        set-option global luar_interpreter luajit
+        set-option global peneira_files_command "rg --files"
+    }
 }
 
-plug " h-youhei/kakoune-surround"
-
-plug "lePerdu/kakboard" %{
-    hook global WinCreate .* %{ kakboard-enable }
+# Better line expanding
+plug "evanrelf/byline.kak" config %{
+      require-module "byline"
 }
 
-plug "andreyorst/powerline.kak" defer powerline %{
-    powerline-separator triangle
-    powerline-format global 'git filetype lsp mode_info line_column position session'
-} defer powerline_bufname %{
-    set-option global powerline_shorten_bufname 'short'
-} config %{
-    powerline-start
+plug "occivink/kakoune-phantom-selection" %{
+    map global normal F     ": phantom-selection-add-selection<ret>"
+    map global normal f     ": phantom-selection-select-all; phantom-selection-clear<ret>"
+    map global normal <a-f> ": phantom-selection-iterate-next<ret>"
+    map global normal <a-F> ": phantom-selection-iterate-prev<ret>"
 }
 
-enable-auto-pairs
+# Buffers fuzzy finder
+define-command peneira-buffer %{
+    peneira -no-rank 'buffers: ' %{ printf '%s\n' $kak_quoted_buflist } %{
+        buffer %arg{1}
+    }
+}
+
 set-option global lsp_auto_highlight_references true
+
+# Enable autopairs
+enable-auto-pairs
+
 #
 # KEYBINDINGS --------------------------------- 
 #
+
+
+# Surround Mode Keybindings ---------------------
+declare-user-mode surround
+map global surround s ':surround<ret>' -docstring 'surround selection with delimiters' 
+map global surround c ':change-surround<ret>' -docstring 'change surrounding delimiters'
+map global surround d ':delete-surround<ret>' -docstring 'delete surrounding delimiters'
+map global surround t ':select-surround<ret>' -docstring 'select surrounding delimiters'
+map global surround m 'm' -docstring 'standard m behaviour'
+map global normal <c-[> ':enter-user-mode surround<ret>'
+map global normal m ':enter-user-mode surround<ret>'
 
 # LSP Keybinds --------------------------------
 declare-user-mode common-lsp
@@ -89,30 +101,76 @@ map global common-lsp <p> ': lsp-find-error --previous<ret>' -docstring "find pr
 map global common-lsp <R> ': lsp-rename-prompt<ret>' -docstring "rename symbol"
 map global common-lsp <a> ': lsp-auto-hover-enable<ret>' -docstring "enable auto hover info"
 map global common-lsp <d> ': lsp-auto-hover-disable<ret>' -docstring "disable auto hover info"
-map global common-lsp <}> ': lsp-next-symbol Class Enum Function Interface Module Namespace Object TypeParameter<ret>' -docstring "goto next symbol"
-map global common-lsp <{> ': lsp-previous-symbol Class Enum Function Interface Module Namespace Object TypeParameter<ret>' -docstring "goto preivious symbol"
-map global common-lsp <h> ': lsp-hover' -docstring "show hover info"
+map global common-lsp <c> ': lsp-code-actions<ret>' -docstring "lsp code actions"
+map global common-lsp <h> ': lsp-hover<ret>' -docstring "show hover info"
 
-# FZF keybindings ---- ------------------------
-map global normal <c-space> ': fzf-mode<ret>'
-map global user <space> ': fzf-mode<ret>' -docstring "fzf mode"
-
-# Surround Mode Keybindings ---------------------
-declare-user-mode surround
-map global surround s ':surround<ret>' -docstring 'surround'
-map global surround c ':change-surround<ret>' -docstring 'change'
-map global surround d ':delete-surround<ret>' -docstring 'delete'
-map global surround t ':select-surrounding-tag<ret>' -docstring 'select tag'
-map global normal <c-[> ':enter-user-mode surround<ret>'
 
 # User Mode keybindings -----------------------
-map global user <e> ': enter-user-mode easymotion<ret>' -docstring "easymotion mode"
-map global user <b> ': pick-buffers<ret>' -docstring "pick buffer"
+map global user <f> ': peneira-files<ret>' -docstring "Fuzzy file finder"
+map global user <B> ': peneira-buffer<ret>' -docstring "Fuzzy buffer opener"
+map global user <b> ': pick-buffers<ret>' -docstring "Pick buffer"
 map global user <L> ': enter-user-mode lsp<ret>' -docstring "LSP operations"
 map global user <l> ': enter-user-mode common-lsp<ret>' -docstring "Common LSP operations"
 map global user <s> ': enter-user-mode surround<ret>' -docstring "Surround operations"
-map global normal <e> ': enter-user-mode easymotion<ret>' -docstring "easymotion mode"
-map global normal <semicolon> ': enter-user-mode common-lsp<ret>' -docstring "Common LSP operations"
-map global insert <c-l> '<esc> : lsp-hover<ret>i'
+map global normal <space> ': enter-user-mode user<ret>' -docstring "User mode"
+map global insert <c-h> '<a-;>: lsp-hover<ret>'
+map global insert <c-.> '<a-;>: lsp-code-action<ret>'
 
 
+# Enable tab completion
+hook global InsertCompletionShow .* %{
+    try %{
+        # this command temporarily removes cursors preceded by whitespace;
+        # if there are no cursors left, it raises an error, does not
+        # continue to execute the mapping commands, and the error is eaten
+        # by the `try` command so no warning appears.
+        execute-keys -draft 'h<a-K>\h<ret>'
+        map window insert <tab> <c-n>
+        map window insert <s-tab> <c-p>
+        hook -once -always window InsertCompletionHide .* %{
+            unmap window insert <tab> <c-n>
+            unmap window insert <s-tab> <c-p>
+        }
+    }
+}
+
+#
+# LSP Config
+#
+
+lsp-inlay-hints-enable global
+lsp-diagnostic-lines-enable global
+lsp-inlay-diagnostics-enable global
+lsp-inline-diagnostics-enable global
+set global lsp_hover_anchor true
+
+# Enable various keybindings for language servers
+hook global WinSetOption filetype=(rust|python|go|javascript|c|cpp|html|css|scss) %{
+    lsp-enable-window
+    map window object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+    map window object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+    map window object e '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
+    map window object k '<a-semicolon>lsp-object Class Interface Struct<ret>' -docstring 'LSP class interface or struct'
+    map window object d '<a-semicolon>lsp-diagnostic-object --include-warnings<ret>' -docstring 'LSP errors and warnings'
+    map window object D '<a-semicolon>lsp-diagnostic-object<ret>' -docstring 'LSP errors'
+}
+
+# Enable using c-n for snippet navigation
+map global insert <c-n> '<a-;>:lsp-snippets-select-next-placeholders<ret>' -docstring 'Select next snippet placeholder'
+# hook global InsertCompletionShow .* %{
+#     unmap global insert <c-n> '<a-;>:lsp-snippets-select-next-placeholders<ret>'
+# }
+# hook global InsertCompletionHide .* %{
+#     map global insert <c-n> '<a-;>:lsp-snippets-select-next-placeholders<ret>' -docstring 'Select next snippet placeholder'
+# }
+
+# Enable semantic tokens for rust
+hook global WinSetOption filetype=(rust) %{
+    expandtab
+    hook window -group semantic-tokens BufReload .* lsp-semantic-tokens
+    hook window -group semantic-tokens NormalIdle .* lsp-semantic-tokens
+    hook window -group semantic-tokens InsertIdle .* lsp-semantic-tokens
+    hook -once -always window WinSetOption filetype=.* %{
+        remove-hooks window semantic-tokens
+    }
+}
