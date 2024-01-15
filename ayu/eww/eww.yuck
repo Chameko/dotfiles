@@ -1,0 +1,126 @@
+;; Useful
+
+(defwidget metric [label value onchange variant]
+    (box :orientation "h"
+        :class "metric-${variant}"
+        :space-evenly false
+        (box :class "label" (label :text "${label} ${value}%"))
+        (scale :min 0
+            :max 101
+            :active {onchange != ""}
+            :value value
+            :onchange onchange)))
+        
+    
+
+
+
+;; Workspaces
+
+(deflisten workspaces :initial "[]" "bash ~/.config/eww/scripts/workspace.sh")
+(deflisten current-workspace :initial "1" "bash ~/.config/eww/scripts/get-active-workspace.sh")
+
+(defwidget workspaces []
+    (box :space-evenly true :halign "start" :class "workspace"
+        (label :text "${workspaces}${current-workspace}" :visible false)
+        (for workspace in workspaces 
+            (eventbox :onclick "hyprctl dispatch workspace ${workspace.id}"
+                (box :class "workspace-entry-${workspace.id == current-workspace ? 'current' : 'empty'}"
+                    (label :text "${workspace.id}"))))))
+
+
+;; Volume
+(defpoll volume :interval "1s" "scripts/get-vol.sh")
+
+(defwidget volume []
+    (metric 
+        :label {volume >= 0 ? "󰕾 " : "󰝟 "}
+        :value {volume < 0 ? "muted" : "${volume}"}
+        :onchange "pamixer --set-volume {}"
+        :variant "volume"
+    )
+)
+
+
+;; Battery
+(defwidget battery []
+    (metric :label {EWW_BATTERY.BAT0.status == "Charging" ? "󰂄" : "󰁹"}
+        :value "${EWW_BATTERY.BAT0.capacity}"
+        :onchange ""
+        :variant "battery"
+    )
+)
+
+
+;; Network
+(defpoll signal-strength :interval "5s" "scripts/get-network.sh")
+
+(defwidget network []
+    (metric :label {signal-strength == "" ? "󰖪 ":"󰖩 " } :value {signal-strength ?: 0} :onchange "" :variant "network"))
+
+;; Time
+(defpoll time :interval "10s"
+    "date '+%I:%M %p'")
+
+(defpoll date :interval "10s"
+    "date '+%d/%m/%Y'")
+
+
+(defwidget time []
+    (label :class "time" :text "󰥔  ${time}   󰃭  ${date}"))
+
+;; Resources
+(defvar ram-reveal false)
+(defwidget resources []
+    (box :class "resources" :hexpand true
+        :space-evenly false
+        (box :class "cpu" :hexpand true
+            :space-evenly false
+            (label :text "   ${round(EWW_CPU.avg, 2)}")
+        )
+        (eventbox :onhover "eww update ram-reveal=true" :onhoverlost "eww update ram-reveal=false"
+            (box :class "ram" :hexpand true
+                :space-evenly false
+                (label :text " ")
+                (revealer :transition "slideleft" :duration "200ms" :reveal {ram-reveal ? false : true}
+                    (label :text "${round(EWW_RAM.used_mem_perc, 2)}")
+                )
+                (revealer :transition "slideright" :duration "200ms" :reveal ram-reveal
+                    (label :text "${round(EWW_RAM.used_mem/1073741824, 2)}GiB/${round(EWW_RAM.total_mem/1073741824, 2)}GiB")
+                )
+            )
+        )
+    )
+)
+
+
+;; Bar
+
+(defwidget bar []
+    (centerbox
+        (workspaces)
+        (resources)
+        (box :space-evenly false :halign "end"
+            (network)
+            (volume)
+            (battery)
+            (time)
+        )
+    )
+)
+
+
+(defwindow bar
+    :monitor 0
+    :geometry (geometry 
+               :x "0%"
+               :y "1%"
+               :width "98%"
+               :height "3%"
+               :anchor "top center")
+    :overlay "bg"
+    :focusable false
+    :exclusive true
+    (bar))
+
+

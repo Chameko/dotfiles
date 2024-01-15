@@ -1,0 +1,133 @@
+* {
+    all: unset;
+}
+
+
+.bar {
+    background-color: #0d1017;
+    color: #b3b1ad;
+    border-radius: 10px;
+}
+
+.metric-volume {
+    color: #59c2ff;
+}
+
+.metric-volume scale trough {
+    all: unset;
+    border-radius: 5px;
+    min-height: 3px;
+    min-width: 50px;
+    background-color: #131721;
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.metric-volume scale trough highlight {
+    all: unset;
+    border-radius: 10px;
+    min-height: 3px;
+    background-color: #59c2ff;
+    color: #59c2ff;
+}
+
+.metric-volume scale trough slider {
+    all: unset;
+}
+
+.metric-network {
+    color: #59c2ff;
+}
+
+.metric-network scale trough {
+    all: unset;
+    border-radius: 5px;
+    min-height: 3px;
+    min-width: 50px;
+    background-color: #131721;
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.metric-network scale trough highlight {
+    all: unset;
+    border-radius: 10px;
+    min-height: 3px;
+    background-color: #59c2ff;
+    color: #59c2ff;
+}
+
+.metric-network scale trough slider {
+    all: unset;
+}
+
+.metric-battery {
+    color: #aad94c;
+}
+
+.metric-battery scale trough {
+    all: unset;
+    border-radius: 5px;
+    min-height: 3px;
+    min-width: 50px;
+    background-color: #131721;
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.metric-battery scale trough highlight {
+    all: unset;
+    border-radius: 10px;
+    min-height: 3px;
+    background-color: #aad94c;
+    color: #59c2ff;
+}
+
+.metric-battery scale trough slider {
+    all: unset;
+}
+
+.workspace {
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.workspace-entry-current {
+    margin-left: 2px;
+    margin-right: 2px;
+    border-radius: 50px;
+    color: #0d1017;
+    background-color: #feb454;
+    min-width: 30px;
+}
+
+.workspace-entry-empty {
+    margin-left: 2px;
+    margin-right: 2px;
+    min-width: 10px;
+}
+
+.cpu {
+    color: #aad94c;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.ram {
+    color: #aad94c;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.cpu-graph {
+    min-height: 20px;
+    min-width: 50px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.time {
+    margin-left: 5px;
+    margin-right: 10px;
+    color: #feb454;
+}
