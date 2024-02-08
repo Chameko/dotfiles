@@ -1,25 +1,23 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 32,
-    "width": 1336, 
-    "modules-left": ["wlr/workspaces", "custom/l1", "tray", "custom/l2"],
+    "modules-left": ["hyprland/workspaces", "tray"],
     "modules-center": ["hyprland/window"],
-    "modules-right": ["custom/r1", "network", "custom/pipewire", "custom/r2", "cpu", "memory", "battery", "custom/r3", "clock"],
+    "modules-right": ["group/g1", "group/g2", "battery", "clock"],
     "radius": 7,
     "fixed-center": false,
-    "wlr/workspaces" : {
+    "hyprland/workspaces" : {
         "format": "{icon}",
         "format-icons": {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "",
-            "6": "",
-            "7": "",
-            "default": "祿",
-            "active": "綠"
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "default": "󰐾",
+            "empty": "󰝦"
+        },
+        "persistent-workspaces" : {
+            "*": 4
         }
     },
     
@@ -28,70 +26,64 @@
     },
     
     "network": {
-        "interface": "wlp4s0",
-        "format": "{說{signalStrength}%}",
-        "tooltip-format": "{essid} | ﰬ{bandwidthDownBits} ﰵ{bandwidthUpBits}",
+        "interface": "wlo1",
+        "format" : "{ifname}",
+        "format-ethernet" : "󰈁",
+        "format-wifi": "{icon} {signalStrength}%",
+        "format-icons": [
+            "󰤨",
+            "󰤢",
+            "󰤥",
+            "󰤨",
+        ],
+        "tooltip-format-wifi": "{essid} | ﰬ{bandwidthDownBits} ﰵ{bandwidthUpBits}",
         "format-disconnected": "( •᷄ὤ•᷅)？"
     },
-    
-    "custom/pipewire": {
-        "max-length": 6,
-        "exec": "$HOME/.config/waybar/scripts/pipewire.sh"
-    },
-    
-    "pulseaudio": {
-        "format": "{icon}{volume}%",
-        "format-muted": "婢",
-        "format-bluetooth": "{volume}%",
-        "format-icons": {
-            "default": "",
-            "headphone": "",
-            "headset": "",
-        }
+    "wireplumber": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟",
+        "format-bluetooth": "󰂯{volume}%",
+        "format-icons": [
+            "󰕿",
+            "󰖀",
+            "󰕾"
+        ]
     },
     
     "cpu": {
-        "format": "{usage}%"
+        "format": " {usage}%"
     },
     
     "memory": {
-        "format": "{used}GiB"
+        "format": " {used}GiB"
     },
     
     "battery": {
         "bat": "BAT0",
-        "format": "{icon}{capacity}%",
+        "format": "{icon} {capacity}%",
         "full-at": 98,
-        "format-icons": ["", "", "", "", "", ""]
+        "format-charging" : "󰂄 {timeTo}{capacity}%",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "format-time" : "{H} h {M} m",
     },
     
     "clock": {
-        "format": "{calendar} {%H:%M}",
-        "format-calendar": "%d/%m/%Y"
+        "format": " {:%H:%M}",
     },
     
     "tray": {
         "icon-size": 21,
         "spacing": 10
     },
-    
-    "custom/l1": {
-        "format": ""
+
+    "group/g1": {
+        "modules": ["network", "wireplumber"],
+        "orientation": "horizontal"
     },
-    
-    "custom/l2": {
-        "format": ""
+
+    "group/g2": {
+        "modules": ["cpu", "memory"],
+        "orientation": "horizontal"
     },
-    
-    "custom/r1": {
-        "format": ""
-    },
-    
-    "custom/r2": {
-        "format": ""
-    },
-    
-    "custom/r3": {
-        "format": ""
-    }
+
 }

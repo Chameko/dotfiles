@@ -4,72 +4,82 @@
   padding-left: 4px;
   padding-right: 4px;
   font-size: 14px;
+  min-height: 2em;
 }
 
 window#waybar {
-  background: #0d1017;
+  background-color: #0d1017;
 }
 
-#workspaces {
-  background: #feb454;
+#workspaces button{
+  background-color: #0d1017;
+  color: #feb454;
+  border-radius: 1em;
+}
+
+#window {
+    color: #BFBDB6
+}
+
+#workspaces button.active {
+  background-color: #feb454;
   color: #0d1017;
 }
 
 #tooltip {
   border: 1px #bfbdb6;
-  background: #0d1017;
+  background-color: #0d1017;
 }
-
-#l1 {
-  color: #feb454;
-  background: #0f131a;
-}
-
 #tray {
-  background: #0f131a;
+  background-color: #0f131a;
 }
 
-#l1, #r1, #r2, #r3 {
-  padding: 0px 0px 0px 0px;
-  margin: 0px 0px 0px 0px;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  font-size: 20px;
-}
-
-#r1 {
-  background: #0f131a;
+#network, #wireplumber, #cpu, #memory, #battery, #clock {
   color: #0d1017;
+  border-radius: 1em;
 }
 
-#network, #custom-pipewire {
-  background: #0f131a;
-  color: #59c2ff;
+#network, #wireplumber {
+  background-color: #59c2ff;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
-#r2 {
-  background: #131721;
-  color: #0f131a;
-}
-
-#cpu, #memory, #battery {
-  background: #131721;
-}
-
-#cpu #memory {
-  color: #f26d78;
+#cpu, #memory {
+  background-color: #f26d78;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 #battery {
-  color: #aad94c;
-}
-
-#r3 {
-  background: #0d1017;
-  color: #131721;
+  background-color: #aad94c;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  margin-right: 0.8em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
 }
 
 #clock {
-  background: #131721;
-  color: #feb454;
+  background-color: #feb454;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+#g1 {
+  background-color: #59c2ff;
+  border-radius: 1em;
+  margin-right: 0.8em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+#g2 {
+  background-color: #f26d78;
+  border-radius: 1em;
+  margin-right: 0.8em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
 }
