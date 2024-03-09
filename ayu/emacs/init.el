@@ -1,28 +1,52 @@
+; Disable default emacs elements
 (setq inhibit-startup-message t)
-  (setq-default cursor-type 'bar)
-  (setq-default indent-tabs-mode nil)
-  (setq-default tab-width 4)
-  (setq indent-line-function 'indent-tab)
-  (tool-bar-mode -1) ; disable toolbar
-  (set-fringe-mode 10) ; Some breathing mode
-  (scroll-bar-mode -1) ; disable visible scrollbar
-  (menu-bar-mode -1) ; disable menubar
-  (set-face-attribute 'default nil :font "Fira Code Nerd Font"  :height 100) ; Setup font
-  (setq visible-bell t) ; Visual bell instead of becoming deaf
-  (column-number-mode) ; Column numbers
-  (global-display-line-numbers-mode) ; Line numbers
-  ;; Disable line nubmers for some modes
-  (dolist (mode '(term-mode-hook
-		  eshell-mode-hook
-		  treemacs-mode))
-    (add-hook mode (lambda () (
-  (display-line-numbers-mode 0)
-  (global-whitespace-mode 0)
-))))
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(tooltip-mode -1)
+(menu-bar-mode -1)
+(set-fringe-mode 10)
 
-  (require 'whitespace) 
-  (global-whitespace-mode 1)
-  (setq whitespace-style '(tab-mark space-mark))
+;; Disable backup files
+(setq make-backup-files nil)
+
+;; Set visual bell
+(setq visible-bell t)
+
+;; Set font
+(set-face-attribute 'default nil :font "CaskaydiaCove Nerd Font Propo" :height 125)
+
+;; Line numbers
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Scroll margin
+(setq scroll-margin 8)
+(setq scroll-conservatively 100)
+
+;; Quick keybinds
+(global-set-key (kbd "C-c C-k") 'kill-current-buffer)
+
+;; Autopairs
+(electric-pair-mode)
+
+;; Spell checking
+(setenv "DICPATH" (concat (getenv "HOME") "/Library/Spelling"))
+(setq ispell-program-name
+      "/usr/bin/hunspell")
+
+;; Make paragraphs use only one space
+(setq sentence-end-double-space nil)
+
+;; Increase some funny numbers to make emacs more responsive
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+		term-mode-hook
+		shell-mode-hook
+		eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Initialise package sources
 (require 'package)
@@ -35,24 +59,33 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-;; Install use-package
+;; Initialise use-package
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(use-package general)
+;; Prevent littering
+(use-package no-littering
+  :demand
+  :config
+  (no-littering-theme-backups))
 
-(use-package hydra)
+;; Treesitter config
+(require 'treesit)
 
-;; Make ESC quit prompts
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+(use-package tree-sitter-langs
+  :config
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-on-after-hook #'tree-sitter-hl-mode))
 
+;; Ivy
+(use-package swiper
+  :bind ("C-s" . swiper))
 (use-package ivy
   :diminish
-  :bind (("C-s" . swiper)
-	 :map ivy-minibuffer-map
+  :bind (:map ivy-minibuffer-map
 	 ("TAB" . ivy-alt-done)
 	 ("C-l" . ivy-alt-done)
 	 ("C-j" . ivy-next-line)
@@ -66,20 +99,33 @@
 	 ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file)
-	 :map minibuffer-local-map
-	 ("C-r" . counsel-minibuffer-history)))
 
 (use-package ivy-rich
   :init (ivy-rich-mode 1))
 
+(use-package counsel
+  :bind (("M-x" . counsel-M-x)
+	 ("C-x  b" . counsel-ibuffer)
+	 ("C-x C-f" . counsel-find-file)
+	 :map minibuffer-local-map
+	 ("C-r" . 'counsel-minibuffer-history)))
+
+;; Doom modeline
+(use-package doom-modeline
+  :init (doom-modeline-mode 1))
+
+;; Rainbow delimiters
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; Which key
 (use-package which-key
   :init (which-key-mode)
-  :diminish which-key-mode)
+  :diminish
+  :config
+  (setq which-key-idle-delay 0.0))
 
+;; Helpful
 (use-package helpful
   :custom
   (counsel-describe-function-function #'helpful-callable)
@@ -90,207 +136,354 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(use-package doom-modeline
-  :init (doom-modeline-mode 1))
-
-(use-package minions
-  :config (minions-mode 1))
-
-;; Theme
-(use-package doom-themes
-  :init (load-theme 'doom-ayu-dark t))
-
-;; Icons
 (use-package all-the-icons)
 
-(defun cmyk/lsp-mode-setup ()
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode))
+
+;; Indent guides
+(use-package highlight-indent-guides
+  :custom
+  (highlight-indent-guides-method 'character)
+  (highlight-indent-guides-responsive 'stack)
+  :hook (prog-mode . highlight-indent-guides-mode))
+
+(use-package meow
+  :config
+  (defun smart-for-file ()
+    "Use projectile find file when in projectile directory, otherwise use normal find file"
+    (interactive)
+    (if (projectile-project-p)
+	(projectile-find-file)
+      (counsel-find-file)))
+  (defun meow-setup ()
+    "Setup meow"
+    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+    (meow-motion-overwrite-define-key
+     '("j" . meow-next)
+     '("k" . meow-prev)
+     '("<escape>" . ignore))
+    (meow-leader-define-key
+     ;; SPC j/k will run the original command in MOTION state.
+     '("j" . "H-j")
+     '("k" . "H-k")
+     ;; Use SPC (0-9) for digit arguments.
+     '("1" . meow-digit-argument)
+     '("2" . meow-digit-argument)
+     '("3" . meow-digit-argument)
+     '("4" . meow-digit-argument)
+     '("5" . meow-digit-argument)
+     '("6" . meow-digit-argument)
+     '("7" . meow-digit-argument)
+     '("8" . meow-digit-argument)
+     '("9" . meow-digit-argument)
+     '("0" . meow-digit-argument)
+     '("/" . meow-keypad-describe-key)
+     '("?" . meow-cheatsheet)
+     '("f" . smart-for-file)
+     '("b" . counsel-ibuffer))
+    (meow-normal-define-key
+     '("0" . meow-expand-0)
+     '("9" . meow-expand-9)
+     '("8" . meow-expand-8)
+     '("7" . meow-expand-7)
+     '("6" . meow-expand-6)
+     '("5" . meow-expand-5)
+     '("4" . meow-expand-4)
+     '("3" . meow-expand-3)
+     '("2" . meow-expand-2)
+     '("1" . meow-expand-1)
+     '("-" . negative-argument)
+     '(";" . meow-reverse)
+     '("," . meow-inner-of-thing)
+     '("." . meow-bounds-of-thing)
+     '("[" . meow-beginning-of-thing)
+     '("]" . meow-end-of-thing)
+     '("a" . meow-append)
+     '("A" . meow-open-below)
+     '("b" . meow-back-word)
+     '("B" . meow-back-symbol)
+     '("c" . meow-change)
+     '("d" . meow-delete)
+     '("D" . meow-backward-delete)
+     '("e" . meow-next-word)
+     '("E" . meow-next-symbol)
+     '("f" . meow-find)
+     '("g" . meow-cancel-selection)
+     '("G" . meow-grab)
+     '("h" . meow-left)
+     '("H" . meow-left-expand)
+     '("i" . meow-insert)
+     '("I" . meow-open-above)
+     '("j" . meow-next)
+     '("J" . meow-next-expand)
+     '("k" . meow-prev)
+     '("K" . meow-prev-expand)
+     '("l" . meow-right)
+     '("L" . meow-right-expand)
+     '("m" . meow-join)
+     '("n" . meow-search)
+     '("o" . meow-block)
+     '("O" . meow-to-block)
+     '("p" . meow-yank)
+     '("P" . clipboard-yank) 
+     '("q" . meow-quit)
+     '("Q" . meow-goto-line)
+     '("r" . meow-replace)
+     '("R" . meow-swap-grab)
+     '("s" . meow-kill)
+     '("S" . meow-visit)
+     '("t" . meow-till)
+     '("u" . meow-undo)
+     '("U" . undo-tree-redo)
+     '("v" . meow-visit)
+     '("w" . meow-mark-word)
+     '("W" . meow-mark-symbol)
+     '("x" . meow-line)
+     '("X" . meow-line-expand)
+     '("y" . meow-save)
+     '("Y" . meow-sync-grab)
+     '("z" . meow-pop-selection)
+     '("'" . repeat)
+     '("<escape>" . ignore)))
+  (meow-setup)
+  (meow-global-mode 1))
 
 (use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook (lsp-mode . cmyk/lsp-mode-setup)
   :init
-  :custom
-  (lsp-rust-analyzer-server-display-inlay-hints t)
-  (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-  (lsp-rust-analyzer-display-chaining-hints t)
-  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-  (lsp-rust-analyzer-display-closure-return-type-hints t)
-  (lsp-rust-analyzer-display-parameter-hints t)
-  (lsp-rust-analyzer-display-reborrow-hints nil)
   (setq lsp-keymap-prefix "C-c l")
-  :config
-  (lsp-enable-which-key-integration t))
+  (setq lsp-idle-delay 0.0)
+  :custom
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-enable-hover nil)
+  (lsp-eldoc-render-all t)
+  (lsp-inlay-hint-enable t)
+  (lsp-rust-analyzer-display-chaining-hints t)
+  :hook
+  (rustic-mode . lsp)
+  (lsp-mode . lsp-enable-which-key-integration))
 
 (use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover nil) 
-)
+  :config
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-doc-show-with-cursor t)
+  (setq lsp-ui-doc-delay 0.8))
 
-(use-package lsp-treemacs
-  :after lsp-mode)
-
-(use-package lsp-ivy
-  :after lsp-mode)
-
-(use-package flycheck :ensure)
+(use-package rustic
+  :bind (:map rustic-mode-map)
+  :config
+  (setq rustic-format-on-save t))
 
 (use-package company
-  :after lsp-mode
-  :hook (prog-mode . company-mode)
-  :bind (:map company-active-map
-	 ("<tab>" . company-complete-section))
-	(:map lsp-mode-map
-	 ("<tab>" . company-indent-or-complete-common))
+  :config (add-hook 'eglot-managed-mode-hook #'company-mode)
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
 
-(use-package rustic
-  :bind (:map rustic-mode-map
-            ("M-j" . lsp-ui-imenu)
-            ("M-?" . lsp-find-references)
-            ("C-c C-c l" . flycheck-list-errors)
-            ("C-c C-c a" . lsp-execute-code-action)
-            ("C-c C-c r" . lsp-rename)
-            ("C-c C-c q" . lsp-workspace-restart)
-            ("C-c C-c Q" . lsp-workspace-shutdown)
-            ("C-c C-c s" . lsp-rust-analyzer-status)))
+(use-package flycheck
+  :init (global-flycheck-mode))
 
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
+  :bind (:map projectile-mode-map
+	      ("C-c p" . projectile-command-map))
   :init
   (when (file-directory-p "~/projects")
     (setq projectile-project-search-path '("~/projects")))
-  (setq projectile-switch-project-action #'projectile-dired))
-
+  (setq projectile-switch-project-action #'projectile-dired)
+  :custom
+  (projectile-completion-system 'ivy))
 
 (use-package counsel-projectile
+  :diminish
   :config (counsel-projectile-mode))
 
 (use-package magit)
 
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
+(use-package dired
+  :ensure nil
+  :custom ((dired-listing-switches "-agho --group-directories-first")))
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package term
   :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
+  (setq term-prompt-regexp "^[#$%>\n]*[#$%>] *"))
 
 (use-package org
   :config
-  (setq org-ellipsis " ▾")
-  (setq org-agenda-start-with-log-mode t)
+  (setq org-hide-emphasis-markers t)
   (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-
-  (setq org-todo-keywords
-	'((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-	  (sequence "IDEA(i)" "PLAN(p)" "ACTIVE(a)" "|" "MAINTAIN(m)" "CANC(k@)" "COMPLETED(c)")))
-
-  (setq org-refile-targets
-	'(("archive.org" :maxlevel . 1)))
-
-  ;; Save all org buffers after refiling
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
-
-  (setq org-tag-alist
-	'((:startgroup)
-	  ; Mutually exclusive tags here
-	  (:endgroup)
-	  ("@school" . ?s)
-	  ("@home" . ?p)))
-
+  (setq org-startup-indented t)
+  (setq org-agenda-files '("~/org-notes"
+			   "~/org-files"))
+  (add-hook 'org-mode-hook 'visual-line-mode)
+  (add-hook 'org-mode-hook 'flyspell-mode)
   (setq org-capture-templates
-	'(("t" "Tasks")
-	  ("tt" "Task" entry (file+olp "~/orgfiles/tasks.org" "Inbox")
-	   "* TODO %?\n %U\n %a\n %i" :empty-lines 1)
-	  ("p" "Projects")
-	  ("pp" "Project" entry (file+olf "~/orgfiles/tasks.org" "Inbox")
-	   "* IDEA %?\n %U\n" :empty-lines 1)))
+	'(("t" "Todo" entry (file+headline "~/org-files/todo.org" "Tasks")
+	   "* TODO %?\n %i\n %a")
+	  ("j" "Journal" entry (file+datetree "~/org-files/journal.org")
+	   "* %?\nEntered on %U\n %i\n %a")
+	  ("a" "Assignment" entry (file+headline "~/org-files/todo.org" "Assignments and tests")
+	   "* TODO %?\n %i\n %a")))
+  :bind
+  ("C-c a" . org-agenda)
+  ("C-c c" . org-capture)
+  ("C-c s" . org-store-link))
 
-  (setq org-agenda-custom-commands
-	'(("d" "Dashboard"
-	   ((agenda "" ((org-deadline-warning-days 7)))
-	    (todo "NEXT"
-		  ((org-agenda-overriding-header "Next Tasks")))
-	    (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+(defun my/org-mode-visual-fill ()
+  "Centre text and provide soft wrapping in org mode"
+  (setq visual-fill-column-width 100)
+  (setq visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
 
-	  ("n" "Next Tasks"
-	   ((todo "NEXT"
-		  ((org-agenda-overriding-header "Next Tasks")))))
+(use-package visual-fill-column
+  :hook (org-mode . my/org-mode-visual-fill))
 
-	  ("h" "School Tasks" tags-todo "+school")
+(use-package solaire-mode
+  :config
+  (solaire-mode))
 
-	  ("p" "Projects"
-	   ((todo "IDEA"
-		  ((org-agenda-overriding-header "Project Ideas")
-		   (org-agenda-files org-agenda-files)))
-	    (todo "PLAN"
-		  ((org-agenda-overriding-header "Planning")
-		   (org-agenda-files org-agenda-files)))
-	    (todo "ACTIVE"
-		  ((org-agenda-overriding-header "Active Projects")
-		   (org-agenda-files org-agenda-files)))
-	    (todo "MAINTAIN"
-		  ((org-agenda-overriding-header "Projects Being Maintained")
-		   (org-agenda-files org-agenda-files)))
-	    (todo "CANC"
-		  ((org-agenda-overriding-header "Canceled Projects")
-		   (org-agenda-files org-agenda-files)))
-	    (todo "COMPLETED"
-		  ((org-agenda-overriding-header "Completed Projects")
-		   (org-agenda-files org-agenda-files)))))))
+(use-package night-owl-theme
+  :config (load-theme 'night-owl t)
+  (set-face-attribute 'font-lock-doc-face nil :foreground "#626a73" :slant 'italic))
+(use-package ace-window
+  :bind
+  ([remap other-window] . ace-window))
 
-  (setq org-agenda-files
-	'("~/orgfiles/tasks.org"
-	  "~/orgfiles/birthdays.org")))
+(use-package treemacs
+  :config
+  (treemacs-indent-guide-mode)
+  (setq treemacs-indent-guide-style 'line)
+  (treemacs-load-theme "all-the-icons"))
 
-(dolist (face '((org-level-1 . 1.2)
-		(org-level-2 . 1.1)
-		(org-level-3 . 1.05)
-		(org-level-4 . 1.0)
-		(org-level-5 . 1.1)
-		(org-level-6 . 1.1)
-		(org-level-7 . 1.1)
-		(org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Fira Code Nerd Font" :weight 'regular :height (cdr face)))
+(use-package treemacs-all-the-icons)
 
-(org-babel-do-load-languages
-  'org-babel-load-languages
-  '((emacs-lisp . t)
-    (python . t)))
+(use-package treemacs-projectile
+  :after treemacs projectile)
 
-(require 'org-tempo)
+;; ligatures
+(use-package ligature
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia and Fira Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode
+                        '(;; == === ==== => =| =>>=>=|=>==>> ==< =/=//=// =~
+                          ;; =:= =!=
+                          ("=" (rx (+ (or ">" "<" "|" "/" "~" ":" "!" "="))))
+                          ;; ;; ;;;
+                          (";" (rx (+ ";")))
+                          ;; && &&&
+                          ("&" (rx (+ "&")))
+                          ;; !! !!! !. !: !!. != !== !~
+                          ("!" (rx (+ (or "=" "!" "\." ":" "~"))))
+                          ;; ?? ??? ?:  ?=  ?.
+                          ("?" (rx (or ":" "=" "\." (+ "?"))))
+                          ;; %% %%%
+                          ("%" (rx (+ "%")))
+                          ;; |> ||> |||> ||||> |] |} || ||| |-> ||-||
+                          ;; |->>-||-<<-| |- |== ||=||
+                          ;; |==>>==<<==<=>==//==/=!==:===>
+                          ("|" (rx (+ (or ">" "<" "|" "/" ":" "!" "}" "\]"
+                                          "-" "=" ))))
+                          ;; \\ \\\ \/
+                          ("\\" (rx (or "/" (+ "\\"))))
+                          ;; ++ +++ ++++ +>
+                          ("+" (rx (or ">" (+ "+"))))
+                          ;; :: ::: :::: :> :< := :// ::=
+                          (":" (rx (or ">" "<" "=" "//" ":=" (+ ":"))))
+                          ;; // /// //// /\ /* /> /===:===!=//===>>==>==/
+                          ("/" (rx (+ (or ">"  "<" "|" "/" "\\" "\*" ":" "!"
+                                          "="))))
+                          ;; .. ... .... .= .- .? ..= ..<
+                          ("\." (rx (or "=" "-" "\?" "\.=" "\.<" (+ "\."))))
+                          ;; -- --- ---- -~ -> ->> -| -|->-->>->--<<-|
+                          ("-" (rx (+ (or ">" "<" "|" "~" "-"))))
+                          ;; *> */ *)  ** *** ****
+                          ("*" (rx (or ">" "/" ")" (+ "*"))))
+                          ;; www wwww
+                          ("w" (rx (+ "w")))
+                          ;; <> <!-- <|> <: <~ <~> <~~ <+ <* <$ </  <+> <*>
+                          ;; <$> </> <|  <||  <||| <|||| <- <-| <-<<-|-> <->>
+                          ;; <<-> <= <=> <<==<<==>=|=>==/==//=!==:=>
+                          ;; << <<< <<<<
+                          ("<" (rx (+ (or "\+" "\*" "\$" "<" ">" ":" "~"  "!"
+                                          "-"  "/" "|" "="))))
+                          ;; >: >- >>- >--|-> >>-|-> >= >== >>== >=|=:=>>
+                          ;; >> >>> >>>>
+                          (">" (rx (+ (or ">" "<" "|" "/" ":" "=" "-"))))
+                          ;; #: #= #! #( #? #[ #{ #_ #_( ## ### #####
+                          ("#" (rx (or ":" "=" "!" "(" "\?" "\[" "{" "_(" "_"
+                                       (+ "#"))))
+                          ;; ~~ ~~~ ~=  ~-  ~@ ~> ~~>
+                          ("~" (rx (or ">" "=" "-" "@" "~>" (+ "~"))))
+                          ;; __ ___ ____ _|_ __|____|_
+                          ("_" (rx (+ (or "_" "|"))))
+                          ;; Fira code: 0xFF 0x12
+                          ("0" (rx (and "x" (+ (in "A-F" "a-f" "0-9")))))
+                          ;; Fira code:
+                          "Fl"  "Tl"  "fi"  "fj"  "fl"  "ft"
+                          ;; The few not covered by the regexps.
+                          "{|"  "[|"  "]#"  "(*"  "}#"  "$>"  "^="))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
 
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(use-package eldoc-box)
 
-(defun cmyk/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/.config/emacs/emacs.org"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-items '((recents . 5)
+			  (projects . 5)
+			  (agenda . 5)))
+  (setq dashboard-icon-type 'all-the-icons)
+  (setq dashboard-week-agenda t)
+  (defun random-banner (items)
+    "Get a random banner image from a list"
+    (let* ((size (length items))
+	   (index (random size)))
+      (nth index items)))
+  (setq dashboard-startup-banner "~/.config/emacs/pictures/lotad.png"))
 
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'cmyk/org-babel-tangle-config)))
+(use-package org-bullets
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(use-package org-roam
+  :custom
+  (org-roam-directory "~/org-notes")
+  (org-roam-completion-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+	 ("C-c n f" . org-roam-node-find)
+	 ("C-c n i" . org-roam-node-insert)
+	 :map org-mode-map
+	 ("C-M-i" . completion-at-point))
+  :config (org-roam-setup))
+
+(use-package calfw)
+(use-package calfw-org)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("3325e2c49c8cc81a8cc94b0d57f1975e6562858db5de840b03338529c64f58d1" "4363ac3323e57147141341a629a19f1398ea4c0b25c79a6661f20ffc44fdd2cb" "5f128efd37c6a87cd4ad8e8b7f2afaba425425524a68133ac0efd87291d05874" "be84a2e5c70f991051d4aaf0f049fa11c172e5d784727e0b525565bb1533ec78" "aec7b55f2a13307a55517fdf08438863d694550565dee23181d2ebd973ebd6b8" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098" "6f1f6a1a3cff62cc860ad6e787151b9b8599f4471d40ed746ea2819fcd184e1a" "4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" default))
+ '(package-selected-packages
+   '(calfw-org calf-org calfw visual-fill-column visual-fill-column-mode org-roam org-bullets dashboard eldoc-box ligature treemacs-all-the-icons treemacs-projectile treemacs ayu-theme ace-window night-owl-theme solaire-mode tree-sitter-langs flycheck no-littering company rustic lsp-mode highlight-indent-guides all-the-icons helpful which-key rainbow-delimiters doom-modeline counsel ivy-rich swiper)))
+ 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
