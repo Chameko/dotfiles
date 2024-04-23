@@ -264,6 +264,11 @@
   (rustic-mode . lsp)
   (lsp-mode . lsp-enable-which-key-integration))
 
+(use-package lsp-pyright
+  :hook (python-mode . (lambda ()
+			 (require 'lsp-pyright)
+			 (lsp))))
+
 (use-package lsp-ui
   :config
   (setq lsp-ui-sideline-enable nil)
@@ -278,8 +283,8 @@
 (use-package company
   :config (add-hook 'eglot-managed-mode-hook #'company-mode)
   :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+  (company-minimum-prefix-length 2)
+  (company-idle-delay 0.1))
 
 (use-package flycheck
   :init (global-flycheck-mode))
@@ -318,17 +323,19 @@
   (setq org-hide-emphasis-markers t)
   (setq org-log-done 'time)
   (setq org-startup-indented t)
+  (setq org-list-allow-alphabetical t)
   (setq org-agenda-files '("~/org-notes"
 			   "~/org-files"))
   (add-hook 'org-mode-hook 'visual-line-mode)
   (add-hook 'org-mode-hook 'flyspell-mode)
   (setq org-capture-templates
 	'(("t" "Todo" entry (file+headline "~/org-files/todo.org" "Tasks")
-	   "* TODO %?\n %i\n %a")
+	   "* TODO %?\n")
 	  ("j" "Journal" entry (file+datetree "~/org-files/journal.org")
 	   "* %?\nEntered on %U\n %i\n %a")
 	  ("a" "Assignment" entry (file+headline "~/org-files/todo.org" "Assignments and tests")
 	   "* TODO %?\n %i\n %a")))
+  (setq org-time-stamp-custom-formats '(("%d/%m/%y %a" . "%d/%m/%y %a %H:%M")))
   :bind
   ("C-c a" . org-agenda)
   ("C-c c" . org-capture)
@@ -479,7 +486,7 @@
  '(custom-safe-themes
    '("3325e2c49c8cc81a8cc94b0d57f1975e6562858db5de840b03338529c64f58d1" "4363ac3323e57147141341a629a19f1398ea4c0b25c79a6661f20ffc44fdd2cb" "5f128efd37c6a87cd4ad8e8b7f2afaba425425524a68133ac0efd87291d05874" "be84a2e5c70f991051d4aaf0f049fa11c172e5d784727e0b525565bb1533ec78" "aec7b55f2a13307a55517fdf08438863d694550565dee23181d2ebd973ebd6b8" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098" "6f1f6a1a3cff62cc860ad6e787151b9b8599f4471d40ed746ea2819fcd184e1a" "4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" default))
  '(package-selected-packages
-   '(calfw-org calf-org calfw visual-fill-column visual-fill-column-mode org-roam org-bullets dashboard eldoc-box ligature treemacs-all-the-icons treemacs-projectile treemacs ayu-theme ace-window night-owl-theme solaire-mode tree-sitter-langs flycheck no-littering company rustic lsp-mode highlight-indent-guides all-the-icons helpful which-key rainbow-delimiters doom-modeline counsel ivy-rich swiper)))
+   '(lsp-pyright calfw-org calf-org calfw visual-fill-column visual-fill-column-mode org-roam org-bullets dashboard eldoc-box ligature treemacs-all-the-icons treemacs-projectile treemacs ayu-theme ace-window night-owl-theme solaire-mode tree-sitter-langs flycheck no-littering company rustic lsp-mode highlight-indent-guides all-the-icons helpful which-key rainbow-delimiters doom-modeline counsel ivy-rich swiper)))
  
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
