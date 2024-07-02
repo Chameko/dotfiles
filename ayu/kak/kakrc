@@ -1,4 +1,4 @@
-#
+# 
 # BASIC CONFIGERATION
 # 
 
@@ -14,14 +14,17 @@ set-option global indentwidth 4
 set-option global ui_options terminal_padding_char=  terminal_padding_fill=true terminal_assistant=cat
 set-option global scrolloff 8,3
 
-colorscheme ayu-dark
-
 #
 # KAKOUNE LSP ---------------------------------
 #
 
 # Start LSP
 eval %sh{kak-lsp --kakoune -s $kak_session}
+
+#
+# KAKOUNE TREESITTER -------------------------
+#
+eval %sh{kak-tree-sitter --with-highlighting -dks --session $kak_session}
 
 #
 # PLUGINS -------------------------------------
@@ -43,16 +46,6 @@ plug "Delapouite/kakoune-buffers/"
 # Surround commands
 plug "h-youhei/kakoune-surround"
 
-# Lua support
-plug "gustavo-hms/luar" %{
-    # Peneira, a fuzzy finder for kakoune
-    plug "gustavo-hms/peneira" %{
-        require-module peneira
-        set-option global luar_interpreter luajit
-        set-option global peneira_files_command "rg --files"
-    }
-}
-
 # Better line expanding
 plug "evanrelf/byline.kak" config %{
       require-module "byline"
@@ -65,14 +58,17 @@ plug "occivink/kakoune-phantom-selection" %{
     map global normal <a-F> ": phantom-selection-iterate-prev<ret>"
 }
 
-# Buffers fuzzy finder
-define-command peneira-buffer %{
-    peneira -no-rank 'buffers: ' %{ printf '%s\n' $kak_quoted_buflist } %{
-        buffer %arg{1}
-    }
+plug "andreyorst/fzf.kak" defer fzf-file %{
+    set-option global fzf_file_command 'rg'
+    set-option global fzf_highlight_command 'bat'
+} config %{
+    require-module fzf
+    require-module fzf-file
+    require-module fzf-grep
+} defer grep %{
+    set-option global fzf_grep_command 'rg'
 }
 
-set-option global lsp_auto_highlight_references true
 
 # Enable autopairs
 enable-auto-pairs
@@ -88,9 +84,7 @@ map global surround s ':surround<ret>' -docstring 'surround selection with delim
 map global surround c ':change-surround<ret>' -docstring 'change surrounding delimiters'
 map global surround d ':delete-surround<ret>' -docstring 'delete surrounding delimiters'
 map global surround t ':select-surround<ret>' -docstring 'select surrounding delimiters'
-map global surround m 'm' -docstring 'standard m behaviour'
 map global normal <c-[> ':enter-user-mode surround<ret>'
-map global normal m ':enter-user-mode surround<ret>'
 
 # LSP Keybinds --------------------------------
 declare-user-mode common-lsp
@@ -106,8 +100,8 @@ map global common-lsp <h> ': lsp-hover<ret>' -docstring "show hover info"
 
 
 # User Mode keybindings -----------------------
-map global user <f> ': peneira-files<ret>' -docstring "Fuzzy file finder"
-map global user <B> ': peneira-buffer<ret>' -docstring "Fuzzy buffer opener"
+map global user <f> ': fzf-mode<ret>f' -docstring "Fuzzy file finder"
+map global user <B> ': fzf-mode<ret>b' -docstring "Fuzzy buffer finder"
 map global user <b> ': pick-buffers<ret>' -docstring "Pick buffer"
 map global user <L> ': enter-user-mode lsp<ret>' -docstring "LSP operations"
 map global user <l> ': enter-user-mode common-lsp<ret>' -docstring "Common LSP operations"
@@ -138,6 +132,7 @@ hook global InsertCompletionShow .* %{
 # LSP Config
 #
 
+set-option global lsp_auto_highlight_references true
 lsp-inlay-hints-enable global
 lsp-diagnostic-lines-enable global
 lsp-inlay-diagnostics-enable global
@@ -174,3 +169,5 @@ hook global WinSetOption filetype=(rust) %{
         remove-hooks window semantic-tokens
     }
 }
+
+colorscheme night-owl
