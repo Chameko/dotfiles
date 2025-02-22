@@ -1,0 +1,41 @@
+# Ocaml
+[language.ocaml.grammar.source.git]
+url = "https://github.com/tree-sitter/tree-sitter-ocaml"
+pin = "a45fda5fe73cda92f2593d16340b3f6bd46674b8"
+
+[language.ocaml.grammar]
+path = "grammars/ocaml/src"
+compile = "cc"
+compile_args = ["-c", "-fpic", "../parser.c", "../scanner.c", "-I", ".."]
+compile_flags = ["-O3"]
+link = "cc"
+link_args = ["-shared", "-fpic", "parser.o", "-o", "ocaml.so"]
+link_flags = ["-O3"]
+
+[language.ocaml.queries.source.git]
+url = "https://github.com/helix-editor/helix"
+pin = "e7ac2fcdecfdbf43a4f772e7f7c163b43b3d0b9b"
+
+[language.ocaml.queries]
+path = "runtime/queries/ocaml"
+
+# Ocaml interface
+[language.ocaml-interface.grammar.source.git]
+url = "https://github.com/tree-sitter/tree-sitter-ocaml"
+pin = "a45fda5fe73cda92f2593d16340b3f6bd46674b8"
+
+[language.ocaml-interface.grammar]
+path = "grammars/interface/src"
+compile = "cc"
+compile_args = ["-c", "-fpic", "../parser.c", "../scanner.c", "-I", ".."]
+compile_flags = ["-O3"]
+link = "cc"
+link_args = ["-shared", "-fpic", "parser.o", "-o", "ocaml-interface.so"]
+link_flags = ["-O3"]
+
+[language.ocaml-interface.queries.source.git]
+url = "https://github.com/helix-editor/helix"
+pin = "e7ac2fcdecfdbf43a4f772e7f7c163b43b3d0b9b"
+
+[language.ocaml-interface.queries]
+path = "runtime/queries/ocaml-interface"

@@ -13,7 +13,7 @@
 (setq visible-bell t)
 
 ;; Set font
-(set-face-attribute 'default nil :font "CaskaydiaCove Nerd Font Propo" :height 125)
+(set-face-attribute 'default nil :font "CaskaydiaCove Nerd Font Propo" :height 200)
 
 ;; Line numbers
 (column-number-mode)
@@ -34,6 +34,7 @@
 (setq ispell-program-name
       "/usr/bin/hunspell")
 
+
 ;; Make paragraphs use only one space
 (setq sentence-end-double-space nil)
 
@@ -42,11 +43,11 @@
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 ;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
+(dolist (mode '(org-modehook
 		term-mode-hook
 		shell-mode-hook
 		eshell-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  (add-hook mode (lambda () (display-line-numbers-mode nil))))
 
 ;; Initialise package sources
 (require 'package)
@@ -245,9 +246,11 @@
      '("y" . meow-save)
      '("Y" . meow-sync-grab)
      '("z" . meow-pop-selection)
+     '("/" . swiper)
      '("'" . repeat)
      '("<escape>" . ignore)))
   (meow-setup)
+  (setq meow-use-clipboard t)
   (meow-global-mode 1))
 
 (use-package lsp-mode
@@ -262,13 +265,14 @@
   (lsp-rust-analyzer-display-chaining-hints t)
   :hook
   (rustic-mode . lsp)
+  (python-mode . lsp)
   (lsp-mode . lsp-enable-which-key-integration))
 
 (use-package lsp-pyright
+  :ensure t
   :hook (python-mode . (lambda ()
-			 (require 'lsp-pyright)
-			 (lsp))))
-
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
 (use-package lsp-ui
   :config
   (setq lsp-ui-sideline-enable nil)
@@ -331,6 +335,8 @@
   (setq org-capture-templates
 	'(("t" "Todo" entry (file+headline "~/org-files/todo.org" "Tasks")
 	   "* TODO %?\n")
+	  ("t" "Event" entry (file+headline "~/org-files/cal.org" "Events")
+	   "* %?\n")
 	  ("j" "Journal" entry (file+datetree "~/org-files/journal.org")
 	   "* %?\nEntered on %U\n %i\n %a")
 	  ("a" "Assignment" entry (file+headline "~/org-files/todo.org" "Assignments and tests")
@@ -354,9 +360,15 @@
   :config
   (solaire-mode))
 
-(use-package night-owl-theme
-  :config (load-theme 'night-owl t)
-  (set-face-attribute 'font-lock-doc-face nil :foreground "#626a73" :slant 'italic))
+;; (use-package night-owl-theme
+;;   :config (load-theme 'night-owl t)
+;;   (set-face-attribute 'font-lock-doc-face nil :foreground "#626a73" :slant 'italic))
+
+(use-package doom-themes
+  :config
+  (load-theme 'doom-tokyo-night t)
+  (doom-themes-org-config))
+
 (use-package ace-window
   :bind
   ([remap other-window] . ace-window))
@@ -478,19 +490,85 @@
 (use-package calfw)
 (use-package calfw-org)
 
+(use-package org-alert
+  :config
+  (setq alert-default-style 'libnotify)
+  (setq org-alert-notification-title "*Agenda*")
+  (setq alert-fade-time 10)
+  (org-alert-enable))
+
+(use-package org-download
+  :config
+  (setq org-download-image-dir "~/org-notes/imgs"))
+
+(use-package ob-kotlin)
+
+(require 'org-roam-export)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((kotlin . t)
+   (python . t)
+   (shell . t)))
+
+(use-package pyvenv)
+
+(use-package kotlin-mode)
+
+(use-package emmet-mode
+  :config
+  (add-hook 'sgml-mode-hook 'emmet-mode)
+  (add-hook 'css-mode-hook  'emmet-mode))
+
+;; Latex
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
+
+;; Major mode for OCaml programming
+(use-package tuareg
+  :ensure t
+  :mode (("\\.ocamlinit\\'" . tuareg-mode)))
+
+;; Major mode for editing Dune project files
+(use-package dune
+  :ensure t)
+
+;; Merlin provides advanced IDE features
+(use-package merlin
+  :ensure t
+  :config
+  (add-hook 'tuareg-mode-hook #'merlin-mode)
+  (add-hook 'merlin-mode-hook #'company-mode)
+  ;; we're using flycheck instead
+  (setq merlin-error-after-save nil))
+
+(use-package merlin-eldoc
+  :ensure t
+  :hook ((tuareg-mode) . merlin-eldoc-setup))
+
+(use-package merlin-company)
+
+;; This uses Merlin internally
+(use-package flycheck-ocaml
+  :ensure t
+  :config
+  (flycheck-ocaml-setup))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("3325e2c49c8cc81a8cc94b0d57f1975e6562858db5de840b03338529c64f58d1" "4363ac3323e57147141341a629a19f1398ea4c0b25c79a6661f20ffc44fdd2cb" "5f128efd37c6a87cd4ad8e8b7f2afaba425425524a68133ac0efd87291d05874" "be84a2e5c70f991051d4aaf0f049fa11c172e5d784727e0b525565bb1533ec78" "aec7b55f2a13307a55517fdf08438863d694550565dee23181d2ebd973ebd6b8" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098" "6f1f6a1a3cff62cc860ad6e787151b9b8599f4471d40ed746ea2819fcd184e1a" "4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" default))
+   '("7e377879cbd60c66b88e51fad480b3ab18d60847f31c435f15f5df18bdb18184" "4594d6b9753691142f02e67b8eb0fda7d12f6cc9f1299a49b819312d6addad1d" "3325e2c49c8cc81a8cc94b0d57f1975e6562858db5de840b03338529c64f58d1" "4363ac3323e57147141341a629a19f1398ea4c0b25c79a6661f20ffc44fdd2cb" "5f128efd37c6a87cd4ad8e8b7f2afaba425425524a68133ac0efd87291d05874" "be84a2e5c70f991051d4aaf0f049fa11c172e5d784727e0b525565bb1533ec78" "aec7b55f2a13307a55517fdf08438863d694550565dee23181d2ebd973ebd6b8" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "8c7e832be864674c220f9a9361c851917a93f921fedb7717b1b5ece47690c098" "6f1f6a1a3cff62cc860ad6e787151b9b8599f4471d40ed746ea2819fcd184e1a" "4ade6b630ba8cbab10703b27fd05bb43aaf8a3e5ba8c2dc1ea4a2de5f8d45882" default))
+ '(org-format-latex-options
+   '(:foreground default :background default :scale 2.0 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers
+		 ("begin" "$1" "$" "$$" "\\(" "\\[")))
  '(package-selected-packages
-   '(lsp-pyright calfw-org calf-org calfw visual-fill-column visual-fill-column-mode org-roam org-bullets dashboard eldoc-box ligature treemacs-all-the-icons treemacs-projectile treemacs ayu-theme ace-window night-owl-theme solaire-mode tree-sitter-langs flycheck no-littering company rustic lsp-mode highlight-indent-guides all-the-icons helpful which-key rainbow-delimiters doom-modeline counsel ivy-rich swiper)))
+   '(merlin-company flycheck-ocaml merlin-eldoc merlin dune tuareg org-roam-export pyvenv lsp-jedi kotlin-mode ob-kotlin org-download doom-themes emmet-mode org-alert lsp-pyright calfw-org calf-org calfw visual-fill-column visual-fill-column-mode org-roam org-bullets dashboard eldoc-box ligature treemacs-all-the-icons treemacs-projectile treemacs ayu-theme ace-window night-owl-theme solaire-mode tree-sitter-langs flycheck no-littering company rustic lsp-mode highlight-indent-guides all-the-icons helpful which-key rainbow-delimiters doom-modeline counsel ivy-rich swiper)))
  
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(secondary-selection ((t (:extend nil :stipple nil :box (:line-width (2 . 2) :color "orange"))))))

@@ -24,7 +24,7 @@ eval %sh{kak-lsp --kakoune -s $kak_session}
 #
 # KAKOUNE TREESITTER -------------------------
 #
-eval %sh{kak-tree-sitter --with-highlighting -dks --session $kak_session}
+eval %sh{kak-tree-sitter --with-highlighting -dks --init $kak_session}
 
 #
 # PLUGINS -------------------------------------
@@ -140,7 +140,7 @@ lsp-inline-diagnostics-enable global
 set global lsp_hover_anchor true
 
 # Enable various keybindings for language servers
-hook global WinSetOption filetype=(rust|python|go|javascript|c|cpp|html|css|scss) %{
+hook global WinSetOption filetype=(rust|python|go|javascript|c|cpp|html|css|scss|ocaml|zig) %{
     lsp-enable-window
     map window object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
     map window object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
@@ -159,15 +159,12 @@ map global insert <c-n> '<a-;>:lsp-snippets-select-next-placeholders<ret>' -docs
 #     map global insert <c-n> '<a-;>:lsp-snippets-select-next-placeholders<ret>' -docstring 'Select next snippet placeholder'
 # }
 
-# Enable semantic tokens for rust
-hook global WinSetOption filetype=(rust) %{
+# Set ocaml spacing to be 2
+hook global WinSetOption filetype=(ocaml) %{
+    set-option window indentwidth 2
     expandtab
-    hook window -group semantic-tokens BufReload .* lsp-semantic-tokens
-    hook window -group semantic-tokens NormalIdle .* lsp-semantic-tokens
-    hook window -group semantic-tokens InsertIdle .* lsp-semantic-tokens
-    hook -once -always window WinSetOption filetype=.* %{
-        remove-hooks window semantic-tokens
-    }
+    # Make tab indent properly
+    map window normal <tab> ';x|ocp-indent -l $kak_cursor_line $kak_buffile | sed "$kak_cursor_line!d"<ret>'
 }
 
 colorscheme night-owl
