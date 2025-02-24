@@ -1,0 +1,87 @@
+* {
+  border: none;
+  font-family: FiraCode Nerd Font;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 13px;
+  min-height: 2em;
+}
+
+window#waybar {
+  background-color: #0d1017;
+}
+
+#workspaces button{
+  background-color: #0d1017;
+  color: #feb454;
+  border-radius: 1em;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+#window {
+    color: #BFBDB6
+}
+
+#workspaces button.focused {
+  background-color: #feb454;
+  color: #0d1017;
+}
+
+#tooltip {
+  border: 1px #bfbdb6;
+  background-color: #0d1017;
+}
+#tray {
+  background-color: #0f131a;
+}
+
+#network, #wireplumber, #cpu, #memory, #battery, #clock {
+  color: #0d1017;
+  border-radius: 1em;
+}
+
+#network, #wireplumber {
+  background-color: #59c2ff;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+#cpu, #memory {
+  background-color: #f26d78;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+#battery {
+  background-color: #aad94c;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  margin-right: 0.8em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+#clock {
+  background-color: #feb454;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+#g1 {
+  background-color: #59c2ff;
+  border-radius: 1em;
+  margin-right: 0.8em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+#g2 {
+  background-color: #f26d78;
+  border-radius: 1em;
+  margin-right: 0.8em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
