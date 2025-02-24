@@ -1,0 +1,168 @@
+# 
+# BASIC CONFIGERATION
+# 
+
+# Add highlighters
+add-highlighter global/number-lines number-lines -relative -hlcursor -separator "  "
+add-highlighter global/ show-whitespaces -spc "·" -lf " "
+add-highlighter global/ wrap -marker "↩ "
+add-highlighter global/ show-matching
+
+# Settings
+set-option global tabstop 4
+set-option global indentwidth 4
+set-option global ui_options terminal_padding_char=  terminal_padding_fill=true terminal_assistant=cat
+set-option global scrolloff 8,3
+
+#
+# KAKOUNE LSP ---------------------------------
+#
+
+# Start LSP
+eval %sh{kak-lsp --kakoune -s $kak_session}
+
+#
+# KAKOUNE TREESITTER -------------------------
+#
+eval %sh{kak-tree-sitter --with-highlighting -dks --init $kak_session}
+
+#
+# PLUGINS -------------------------------------
+#
+
+# Load plungin manager
+source "%val{config}/bundle/kak-bundle/rc/kak-bundle.kak"
+bundle-noload kak-bundle https://codeberg.org/jdugan6240/kak-bundle
+
+# Autopairs :)
+bundle auto-pairs "https://github.com/alexherbo2/auto-pairs.kak"
+
+# Smarttab
+bundle smarttab "https://github.com/andreyorst/smarttab.kak"
+
+# Easier navigation of buffers
+bundle kakoune-buffers "https://github.com/Delapouite/kakoune-buffers/"
+
+# Surround commands
+bundle kakoune-surround "https://github.com/h-youhei/kakoune-surround"
+
+# Better line expanding
+bundle byline "https://github.com/evanrelf/byline.kak" %{
+    require-module "byline"
+}
+
+bundle kakoune-phantom-selection "https://github.com/occivink/kakoune-phantom-selection" %{
+    map global normal F     ": phantom-selection-add-selection<ret>"
+    map global normal f     ": phantom-selection-select-all; phantom-selection-clear<ret>"
+    map global normal <a-f> ": phantom-selection-iterate-next<ret>"
+    map global normal <a-F> ": phantom-selection-iterate-prev<ret>"
+}
+
+bundle fzf "https://github.com/andreyorst/fzf.kak" %{
+    set-option global fzf_file_command 'rg'
+    set-option global fzf_highlight_command 'bat'
+    require-module fzf
+    require-module fzf-file
+    require-module fzf-grep
+    set-option global fzf_grep_command 'rg'
+}
+
+
+# Enable autopairs
+enable-auto-pairs
+
+#
+# KEYBINDINGS --------------------------------- 
+#
+
+
+# Surround Mode Keybindings ---------------------
+declare-user-mode surround
+map global surround s ':surround<ret>' -docstring 'surround selection with delimiters' 
+map global surround c ':change-surround<ret>' -docstring 'change surrounding delimiters'
+map global surround d ':delete-surround<ret>' -docstring 'delete surrounding delimiters'
+map global surround t ':select-surround<ret>' -docstring 'select surrounding delimiters'
+map global normal <c-[> ':enter-user-mode surround<ret>'
+
+# LSP Keybinds --------------------------------
+declare-user-mode common-lsp
+map global common-lsp <e> ': lsp-diagnostics<ret>' -docstring "list project errors, hints, info and warnings"
+map global common-lsp <r> ': lsp-references<ret>' -docstring "list symbol references"
+map global common-lsp <n> ': lsp-find-error<ret>' -docstring "find next error"
+map global common-lsp <p> ': lsp-find-error --previous<ret>' -docstring "find previous error"
+map global common-lsp <R> ': lsp-rename-prompt<ret>' -docstring "rename symbol"
+map global common-lsp <a> ': lsp-auto-hover-enable<ret>' -docstring "enable auto hover info"
+map global common-lsp <d> ': lsp-auto-hover-disable<ret>' -docstring "disable auto hover info"
+map global common-lsp <c> ': lsp-code-actions<ret>' -docstring "lsp code actions"
+map global common-lsp <h> ': lsp-hover<ret>' -docstring "show hover info"
+
+
+# User Mode keybindings -----------------------
+map global user <f> ': fzf-mode<ret>f' -docstring "Fuzzy file finder"
+map global user <B> ': fzf-mode<ret>b' -docstring "Fuzzy buffer finder"
+map global user <b> ': pick-buffers<ret>' -docstring "Pick buffer"
+map global user <L> ': enter-user-mode lsp<ret>' -docstring "LSP operations"
+map global user <l> ': enter-user-mode common-lsp<ret>' -docstring "Common LSP operations"
+map global user <s> ': enter-user-mode surround<ret>' -docstring "Surround operations"
+map global normal <space> ': enter-user-mode user<ret>' -docstring "User mode"
+map global insert <c-h> '<a-;>: lsp-hover<ret>'
+map global insert <c-.> '<a-;>: lsp-code-action<ret>'
+
+
+# Enable tab completion
+hook global InsertCompletionShow .* %{
+    try %{
+        # this command temporarily removes cursors preceded by whitespace;
+        # if there are no cursors left, it raises an error, does not
+        # continue to execute the mapping commands, and the error is eaten
+        # by the `try` command so no warning appears.
+        execute-keys -draft 'h<a-K>\h<ret>'
+        map window insert <tab> <c-n>
+        map window insert <s-tab> <c-p>
+        hook -once -always window InsertCompletionHide .* %{
+            unmap window insert <tab> <c-n>
+            unmap window insert <s-tab> <c-p>
+        }
+    }
+}
+
+#
+# LSP Config
+#
+
+set-option global lsp_auto_highlight_references true
+lsp-inlay-hints-enable global
+lsp-diagnostic-lines-enable global
+lsp-inlay-diagnostics-enable global
+lsp-inline-diagnostics-enable global
+set global lsp_hover_anchor true
+
+# Enable various keybindings for language servers
+hook global WinSetOption filetype=(rust|python|go|javascript|c|cpp|html|css|scss|ocaml|zig) %{
+    lsp-enable-window
+    map window object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+    map window object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+    map window object e '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
+    map window object k '<a-semicolon>lsp-object Class Interface Struct<ret>' -docstring 'LSP class interface or struct'
+    map window object d '<a-semicolon>lsp-diagnostic-object --include-warnings<ret>' -docstring 'LSP errors and warnings'
+    map window object D '<a-semicolon>lsp-diagnostic-object<ret>' -docstring 'LSP errors'
+}
+
+# Enable using c-n for snippet navigation
+map global insert <c-n> '<a-;>:lsp-snippets-select-next-placeholders<ret>' -docstring 'Select next snippet placeholder'
+# hook global InsertCompletionShow .* %{
+#     unmap global insert <c-n> '<a-;>:lsp-snippets-select-next-placeholders<ret>'
+# }
+# hook global InsertCompletionHide .* %{
+#     map global insert <c-n> '<a-;>:lsp-snippets-select-next-placeholders<ret>' -docstring 'Select next snippet placeholder'
+# }
+
+# Set ocaml spacing to be 2
+hook global WinSetOption filetype=(ocaml) %{
+    set-option window indentwidth 2
+    expandtab
+    # Make tab indent properly
+    map window normal <tab> ';x|ocp-indent -l $kak_cursor_line $kak_buffile | sed "$kak_cursor_line!d"<ret>'
+}
+
+colorscheme night-owl
